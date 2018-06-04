@@ -4,27 +4,182 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Mi Colección de Música</title>
-  <link rel="shortcut icon" href="CD.png" />
+  <title>MCollections</title>
   <link rel="shortcut icon" href="CD.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 
-  <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+  <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 
-<body>
+<body onload="refreshRecords()">
+  <!-- Navbar -->
+  <div class="w3-top">
+    <div class="w3-bar w3-black w3-card">
+      <a href="#" class="w3-bar-item w3-button w3-padding-large">
+        <i class="fa fa-home" style="font-size:25px;"></i>
+      </a>
+      <a href="#collection" class="w3-bar-item w3-button w3-padding-large w3-hide-small" onclick="refreshRecords(); hideAll('collections');">Mis colecciones</a>
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-padding-large w3-button" title="More">Acerca de...
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+          <a href="#" class="w3-bar-item w3-button">Interpretes</a>
+          <a href="#" class="w3-bar-item w3-button">Estilos</a>
+          <a href="#" class="w3-bar-item w3-button">Textos</a>
+          <a href="#" class="w3-bar-item w3-button">Canciones</a>
+          <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('supports');">Soportes</a>
+          <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('collections');">Colecciones</a>
+        </div>
+      </div>
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-padding-large w3-button" title="More">Agregar
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+          <a href="#" class="w3-bar-item w3-button">Interprete</a>
+          <a href="#" class="w3-bar-item w3-button">Estilo</a>
+          <a href="#" class="w3-bar-item w3-button">Texto</a>
+          <a href="#" class="w3-bar-item w3-button">Canción</a>
+          <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('supports');">Soporte</a>
+          <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('collections');">Colección</a>
+        </div>
+      </div>
+      <a href="javascript:void(0)" class="w3-padding-large w3-hover-red w3-hide-small w3-right">
+        <i class="fa fa-search"></i>
+      </a>
+    </div>
+  </div>
 
-  <script>(function () { window.open("inicio.html", "_self"); })()</script>
+  <!-- Page content -->
+  <div class="w3-content" style="max-width:2000px;margin-top:46px">
+
+    <!-- MIS COLECCIONES -->
+    <div style="display:none" class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="collections">
+
+      <!-- TITLE. -->
+      <h2 class="w3-wide">Mis Colecciones</h2>
+      <p class="w3-opacity">
+        <i>... Mi mundo en una lista.</i>
+      </p>
+      <!-- END TITLE. -->
+
+      <!-- COLLECTIONS._____________________________________________________________________________________________________________________________ -->
+      <div id="collection-list"></div>
+      <!-- END COLLECTIONS. -->
+
+
+      <!-- AGREGAR -->
+      <div class="w3-center w3-padding-64" id="add-collection">
+        <span class="w3-xlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+      </div>
+
+
+      <form class="w3-container" action="/action_page.php" target="_blank">
+
+        <!-- TITULO. -->
+        <div class="w3-section">
+          <label>Título</label>
+          <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="title-collection" name="name"
+            required>
+        </div>
+
+        <!-- GRABACIONES. -->
+        <div class="w3-section ">
+          <label>Grabación</label>
+          <label>
+            <input id="record" list="records" name="records" />
+          </label>
+          <datalist id="records">
+          </datalist>
+
+          <label class="w3-button w3-black" onclick="AddSelectedRecord()">Añadir</label>
+        </div>
+
+        <!-- LISTA SELECCIONADA. -->
+        <div class="w3-section w3-left w3-padding-0">
+          <label>Seleccionadas</label>
+          <ol id="records-selected" type="I">
+          </ol>
+        </div>
+
+        <!-- HECHO. -->
+        <label type="submit" class="w3-button w3-block w3-black" onclick="addCollection()">Hecho</label>
+      </form>
+      <!-- END AGREGAR -->
+
+
+      <!-- END MIS COLECCIONES -->
+    </div>
+
+    <!-- SOPORTES. _________________________________________________________________________________________________________________________________-->
+    <div style="display:none" class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="supports">
+
+      <!-- TITLE. -->
+      <h2 class="w3-wide">Soportes</h2>
+      <p class="w3-opacity">
+        <i>... Llenando de estrellas el cielo.</i>
+      </p>
+      <!-- END TITLE. -->
+
+      <!-- SUPPORTS. -->
+      <div id="support-list"></div>
+      <!-- END SUPPORTS. -->
+
+
+      <!-- AGREGAR -->
+      <div class="w3-center w3-padding-64" id="add-collection">
+        <span class="w3-xlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+      </div>
+
+
+      <form class="w3-container" action="/action_page.php" target="_blank">
+
+        <!-- TITULO. -->
+        <div class="w3-section">
+          <label>Título</label>
+          <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="title-collection" name="name"
+            required>
+        </div>
+
+        <!-- GRABACIONES. -->
+        <div class="w3-section ">
+          <label>Grabación</label>
+          <label>
+            <input id="record" list="records" name="records" />
+          </label>
+          <datalist id="records">
+          </datalist>
+
+          <label class="w3-button w3-black" onclick="AddSelectedRecords()">Añadir</label>
+        </div>
+
+        <!-- LISTA SELECCIONADA. -->
+        <div class="w3-section w3-left w3-padding-0">
+          <label>Seleccionadas</label>
+          <ol id="records-selected" type="I">
+          </ol>
+        </div>
+
+        <!-- HECHO. -->
+        <label type="submit" class="w3-button w3-block w3-black" onclick="addCollection()">Hecho</label>
+      </form>
+      <!-- END AGREGAR -->
+
+
+      <!-- END SOPORTES. -->
+    </div>
+
+
+  </div>
 
   <script src="main.js"></script>
-
 </body>
 
 </html>
