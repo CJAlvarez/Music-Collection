@@ -17,7 +17,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 
-<body onload="refreshRecords()">
+<body>
   <!-- Navbar -->
   <div class="w3-top">
     <div class="w3-bar w3-black w3-card">
@@ -34,7 +34,7 @@
           <a href="#" class="w3-bar-item w3-button">Estilos</a>
           <a href="#" class="w3-bar-item w3-button">Textos</a>
           <a href="#" class="w3-bar-item w3-button">Canciones</a>
-          <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('supports');">Soportes</a>
+          <a href="#" class="w3-bar-item w3-button">Soportes</a>
           <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('collections');">Colecciones</a>
         </div>
       </div>
@@ -47,7 +47,7 @@
           <a href="#" class="w3-bar-item w3-button">Estilo</a>
           <a href="#" class="w3-bar-item w3-button">Texto</a>
           <a href="#" class="w3-bar-item w3-button">Canción</a>
-          <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('supports');">Soporte</a>
+          <a href="#" class="w3-bar-item w3-button">Soporte</a>
           <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('collections');">Colección</a>
         </div>
       </div>
@@ -60,8 +60,8 @@
   <!-- Page content -->
   <div class="w3-content" style="max-width:2000px;margin-top:46px">
 
-    <!-- MIS COLECCIONES -->
-    <div style="display:none" class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="collections">
+    <!-- MIS COLECCIONES_____________________________________________________________________________________________________________________________  -->
+    <div style="display:none" class="w3-container w3-center w3-padding-64" style="max-width:800px" id="collections">
 
       <!-- TITLE. -->
       <h2 class="w3-wide">Mis Colecciones</h2>
@@ -70,110 +70,51 @@
       </p>
       <!-- END TITLE. -->
 
-      <!-- COLLECTIONS._____________________________________________________________________________________________________________________________ -->
+      <!-- COLLECTIONS.-->
       <div id="collection-list"></div>
       <!-- END COLLECTIONS. -->
 
 
       <!-- AGREGAR -->
-      <div class="w3-center w3-padding-64" id="add-collection">
-        <span class="w3-xlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
-      </div>
-
-
-      <form class="w3-container" action="/action_page.php" target="_blank">
+      <div class="w3-card w3-padding-0">
+        <div class="w3-center w3-padding-64" id="add-collection">
+          <span class="w3-xlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+        </div>
 
         <!-- TITULO. -->
-        <div class="w3-section">
-          <label>Título</label>
-          <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="title-collection" name="name"
-            required>
+        <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
+          <h3b>Título</h3 b>
+            <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="title-collection">
         </div>
 
         <!-- GRABACIONES. -->
-        <div class="w3-section ">
-          <label>Grabación</label>
-          <label>
-            <input id="record" list="records" name="records" />
-          </label>
-          <datalist id="records">
-          </datalist>
+        <div class="w3-section " style="padding-left: 20px; padding-right: 20px;">
+          <h3b>Grabaciones disponibles</h3b>
 
-          <label class="w3-button w3-black" onclick="AddSelectedRecord()">Añadir</label>
+          <!-- LISTADO DE OPCIONES. -->
+          <div class="w3-section ">
+            <ul id="opciones" class="w3-ul "> </ul>
+          </div>
         </div>
 
         <!-- LISTA SELECCIONADA. -->
-        <div class="w3-section w3-left w3-padding-0">
-          <label>Seleccionadas</label>
-          <ol id="records-selected" type="I">
-          </ol>
+        <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
+          <div class="w3-section ">
+            <h3b>Seleccionadas</h3b>
+
+            <!-- LISTADO DE SELECCIONADOS. -->
+            <div class="w3-section ">
+              <ul id="seleccionados" class="w3-ul "> </ul>
+            </div>
+          </div>
         </div>
 
         <!-- HECHO. -->
         <label type="submit" class="w3-button w3-block w3-black" onclick="addCollection()">Hecho</label>
-      </form>
-      <!-- END AGREGAR -->
-
+        <!-- END AGREGAR -->
+      </div>
 
       <!-- END MIS COLECCIONES -->
-    </div>
-
-    <!-- SOPORTES. _________________________________________________________________________________________________________________________________-->
-    <div style="display:none" class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="supports">
-
-      <!-- TITLE. -->
-      <h2 class="w3-wide">Soportes</h2>
-      <p class="w3-opacity">
-        <i>... Llenando de estrellas el cielo.</i>
-      </p>
-      <!-- END TITLE. -->
-
-      <!-- SUPPORTS. -->
-      <div id="support-list"></div>
-      <!-- END SUPPORTS. -->
-
-
-      <!-- AGREGAR -->
-      <div class="w3-center w3-padding-64" id="add-collection">
-        <span class="w3-xlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
-      </div>
-
-
-      <form class="w3-container" action="/action_page.php" target="_blank">
-
-        <!-- TITULO. -->
-        <div class="w3-section">
-          <label>Título</label>
-          <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="title-collection" name="name"
-            required>
-        </div>
-
-        <!-- GRABACIONES. -->
-        <div class="w3-section ">
-          <label>Grabación</label>
-          <label>
-            <input id="record" list="records" name="records" />
-          </label>
-          <datalist id="records">
-          </datalist>
-
-          <label class="w3-button w3-black" onclick="AddSelectedRecords()">Añadir</label>
-        </div>
-
-        <!-- LISTA SELECCIONADA. -->
-        <div class="w3-section w3-left w3-padding-0">
-          <label>Seleccionadas</label>
-          <ol id="records-selected" type="I">
-          </ol>
-        </div>
-
-        <!-- HECHO. -->
-        <label type="submit" class="w3-button w3-block w3-black" onclick="addCollection()">Hecho</label>
-      </form>
-      <!-- END AGREGAR -->
-
-
-      <!-- END SOPORTES. -->
     </div>
 
 

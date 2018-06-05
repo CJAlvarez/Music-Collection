@@ -9,24 +9,25 @@ var config = {
 };
 firebase.initializeApp(config);
 
-
-
 function hideAll(id) {
     console.log(id);
     document.getElementById("collections").style.display = "none";
-    document.getElementById("supports").style.display = "none";
     document.getElementById(id).style.display = "block";
 }
 
 
-/** RECORDS._______________________________________________________________________________________________________________________________ */
+/* RECORDS._______________________________________________________________________________________________________________________________ */
 
+// Variables
 var recordList = "";
+var track = 0;
 
+/**
+ * Refresca todas las grabaciones disponibles.
+ */
 function refreshRecords() {
-    var div = document.getElementById('records')
+    var div = document.getElementById('opciones');
     while (div.hasChildNodes()) {
-        console.log("CLEANING");
         div.removeChild(div.lastChild);
     }
 
@@ -34,65 +35,57 @@ function refreshRecords() {
         // FOR_EACH
         snapshot.forEach(function (data) {
             // REAL_CAPTURE
-            document.getElementById("records").insertAdjacentHTML('beforeEnd', '<option id="' + data.val().id + '" value="' + data.val().name + '" onselect="setSelectedRecord('+data.val().id+');">');
+            var newHTML = '<li id="' + data.val().id + '"class="w3-display-container w3-hover-black">' + data.val().name + '<span onclick="add_SelectedRecord_Collection(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
+            document.getElementById("opciones").insertAdjacentHTML('beforeEnd', newHTML);
             // END REAL_CAPTURE
         });
         // END FOR_EACH
     });
+
 }
 
-/* Establece en la ariable selectRecord, el componente completo que es seleccionado en el datalist. */
-var selectedRecord = "";
-function setSelectedRecord(div) {
-    console.log(div);
-    selectedRecord = div;
-    console.log(selectedRecord);
+/**
+ * Envía el objeto actual, lo oculta y lo agrega a la lista de Records Seleccionados para Collections.
+ * @param {this} o 
+ */
+function add_SelectedRecord_Collection(o) {
+    o.parentElement.style.display = 'none';
+    var newNode = '"title"' + ': "' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '", ';
+    newNode += '"id"' + ': "' + o.parentElement.getAttribute("id") + '"';
+    recordList += '"' + track + '": {' + newNode + "},";
+    track += 1;
+    var newHTML = '<li id="' + o.parentElement.getAttribute("id") + '"class="w3-display-container w3-hover-black">' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '</li>';
+    document.getElementById("seleccionados").insertAdjacentHTML('beforeEnd', newHTML);
 }
 
-/** Agrega los records seleccionados a la lista de records seleccionados. */
-function AddSelectedRecord() {
-    if (document.getElementById("record").value != "") {
-        // Doy formato al JSon
-        recordList += '"title"' + ': "' + document.getElementById("record").value + '", ';
+/* COLLECTION._______________________________________________________________________________________________________________________________ */
 
-        // Agrega el componente HTML a la lista
-        document.getElementById("records-selected").insertAdjacentHTML('beforeEnd', '<li>' + document.getElementById("record").value + '</li>');
-
-        // Elimino el componente seleccionado de los disponibles a seleccionar
-        var div = document.getElementById('records');
-        while (div.hasChildNodes()) {
-            console.log("CLEANING");
-            div.removeChild(document.getElementById(selectedRecord));
-        }
-
-        // Reseteo los campos
-        document.getElementById("record").value = "";
-        selectedRecord = "";
-    }
-}
-
-/** COLLECTION._______________________________________________________________________________________________________________________________ */
-
+/** Agrega la colección a la base de datos. */
 function addCollection() {
     // GENERATE A UNIQUE ID BY DATE
     var fecha = new Date();
     var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
     json = "{" + recordList.substring(0, recordList.lastIndexOf(",")) + "}";
-    console.log(json);
+    alert(json);
+
+    // TRANSACCION PRINCIPAL
     var title = document.getElementById("title-collection").value;
     firebase.database().ref('collections/' + UID).set({
         title: title,
         recordList: JSON && JSON.parse(json) || $.parseJSON(json)
     });
+
+    // RESETEO DE VARIABLES Y CAMPOS
     recordList = "";
+    track = 0;
     document.getElementById("title-collection").value = "";
-    document.getElementById("record").value = "";
-    var div = document.getElementById('records-selected');
+    var div = document.getElementById('seleccionados');
     while (div.hasChildNodes()) {
-        console.log("CLEANING");
         div.removeChild(div.lastChild);
     }
     refreshRecords();
 }
-/** SUPPORT._______________________________________________________________________________________________________________________________ */
+
+/* INTERPRETES._______________________________________________________________________________________________________________________________ */
+
 
