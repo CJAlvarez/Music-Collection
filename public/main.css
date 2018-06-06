@@ -1,8 +1,12 @@
-html,body,h1,h2,h3,h4 {font-family:"Lato", sans-serif}
-.w3-tag, .fa {cursor:pointer}
+html,body,h1,h2,h4 {font-family:"Lato", sans-serif}
+.w3-tag, .fa, .cursor-pointer {cursor:pointer}
 .w3-tag {height:15px;width:15px;padding:0;margin-top:6px}
 
-h3b{
+h3{
     font-size: 20px;
     font-style: italic;
+}
+
+.colorwhitesmoke {
+    background: whitesmoke;
 }

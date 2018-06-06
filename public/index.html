@@ -24,18 +24,17 @@
       <a href="#" class="w3-bar-item w3-button w3-padding-large">
         <i class="fa fa-home" style="font-size:25px;"></i>
       </a>
-      <a href="#collection" class="w3-bar-item w3-button w3-padding-large w3-hide-small" onclick="refreshRecords(); hideAll('collections');">Mis colecciones</a>
+      <a href="#collection" class="w3-bar-item w3-button w3-padding-large w3-hide-small" onclick=" hideAll('collections');">Mi Colección</a>
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-padding-large w3-button" title="More">Acerca de...
           <i class="fa fa-caret-down"></i>
         </button>
         <div class="w3-dropdown-content w3-bar-block w3-card-4">
-          <a href="#" class="w3-bar-item w3-button">Interpretes</a>
+          <a href="#" class="w3-bar-item w3-button" onclick=" hideAll('performers'); initPerformerPage()">Interpretes</a>
           <a href="#" class="w3-bar-item w3-button">Estilos</a>
           <a href="#" class="w3-bar-item w3-button">Textos</a>
           <a href="#" class="w3-bar-item w3-button">Canciones</a>
           <a href="#" class="w3-bar-item w3-button">Soportes</a>
-          <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('collections');">Colecciones</a>
         </div>
       </div>
       <div class="w3-dropdown-hover w3-hide-small">
@@ -43,12 +42,11 @@
           <i class="fa fa-caret-down"></i>
         </button>
         <div class="w3-dropdown-content w3-bar-block w3-card-4">
-          <a href="#" class="w3-bar-item w3-button">Interprete</a>
+          <a href="#" class="w3-bar-item w3-button" onclick=" hideAll('collections'); initPerformerPage()">Interprete</a>
           <a href="#" class="w3-bar-item w3-button">Estilo</a>
           <a href="#" class="w3-bar-item w3-button">Texto</a>
           <a href="#" class="w3-bar-item w3-button">Canción</a>
           <a href="#" class="w3-bar-item w3-button">Soporte</a>
-          <a href="#" class="w3-bar-item w3-button" onclick="refreshRecords(); hideAll('collections');">Colección</a>
         </div>
       </div>
       <a href="javascript:void(0)" class="w3-padding-large w3-hover-red w3-hide-small w3-right">
@@ -60,63 +58,223 @@
   <!-- Page content -->
   <div class="w3-content" style="max-width:2000px;margin-top:46px">
 
-    <!-- MIS COLECCIONES_____________________________________________________________________________________________________________________________  -->
+    <!-- MI COLECCION_____________________________________________________________________________________________________________________________  -->
     <div style="display:none" class="w3-container w3-center w3-padding-64" style="max-width:800px" id="collections">
 
       <!-- TITLE. -->
-      <h2 class="w3-wide">Mis Colecciones</h2>
+      <h2 class="w3-wide">Mi Colección</h2>
       <p class="w3-opacity">
         <i>... Mi mundo en una lista.</i>
       </p>
       <!-- END TITLE. -->
 
       <!-- COLLECTIONS.-->
-      <div id="collection-list"></div>
+      <div id="collections-list w3-responsive">
+        <table class="w3-table-all">
+          <tr>
+            <th>First Name</th>
+            <th>Points</th>
+          </tr>
+        </table>
+      </div>
       <!-- END COLLECTIONS. -->
 
-
-      <!-- AGREGAR -->
-      <div class="w3-card w3-padding-0">
-        <div class="w3-center w3-padding-64" id="add-collection">
-          <span class="w3-xlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
-        </div>
-
-        <!-- TITULO. -->
-        <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
-          <h3b>Título</h3 b>
-            <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="title-collection">
-        </div>
-
-        <!-- GRABACIONES. -->
-        <div class="w3-section " style="padding-left: 20px; padding-right: 20px;">
-          <h3b>Grabaciones disponibles</h3b>
-
-          <!-- LISTADO DE OPCIONES. -->
-          <div class="w3-section ">
-            <ul id="opciones" class="w3-ul "> </ul>
-          </div>
-        </div>
-
-        <!-- LISTA SELECCIONADA. -->
-        <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
-          <div class="w3-section ">
-            <h3b>Seleccionadas</h3b>
-
-            <!-- LISTADO DE SELECCIONADOS. -->
-            <div class="w3-section ">
-              <ul id="seleccionados" class="w3-ul "> </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- HECHO. -->
-        <label type="submit" class="w3-button w3-block w3-black" onclick="addCollection()">Hecho</label>
-        <!-- END AGREGAR -->
-      </div>
-
-      <!-- END MIS COLECCIONES -->
+      <!-- END MI COLECCION -->
     </div>
 
+    <!-- INTERPRETES _____________________________________________________________________________________________________________________________  -->
+    <div class="w3-container w3-center w3-padding-64" style="display:none;" id="performers">
+
+      <!-- TITLE. -->
+      <h2 class="w3-wide">Interpretes</h2>
+      <p class="w3-opacity">
+        <i>... Los estelares del cosmos.</i>
+      </p>
+      <!-- END TITLE. -->
+
+      <!-- PERFORMERS LIST.-->
+      <div id="performers-list w3-responsive ">
+
+        <!-- Solistas Lista. -->
+        <div class="w3-section w3-card">
+          <h3 class="w3-hover-sand w3-blue" style="cursor:pointer;" onclick="(function() {
+              if(document.getElementById('lone_tablePerformer').style.display == 'none'){
+                  document.getElementById('lone_tablePerformer').style.display = 'block';
+              } else {
+                  document.getElementById('lone_tablePerformer').style.display = 'none';
+              }})()">Solistas</h3>
+          <div id="lone_tablePerformer">
+          </div>
+        </div>
+
+        <!-- Grupos Lista. -->
+        <div class="w3-section w3-card">
+          <h3 class="w3-hover-sand w3-black" style="cursor:pointer;" onclick="(function() {
+              if(document.getElementById('group_tablePerformer').style.display == 'none'){
+                  document.getElementById('group_tablePerformer').style.display = 'block';
+              } else {
+                  document.getElementById('group_tablePerformer').style.display = 'none';
+              }})()">Grupos</h3>
+              <div id="group_tablePerformer">
+                </div>
+        </div>
+
+        <!-- Orquestas Lista. -->
+        <div class="w3-section w3-card">
+          <h3 class="w3-hover-sand w3-orange" style="cursor:pointer;" onclick="(function() {
+              if(document.getElementById('orchestras_tablePerformer').style.display == 'none'){
+                  document.getElementById('orchestras_tablePerformer').style.display = 'block';
+              } else {
+                  document.getElementById('orchestras_tablePerformer').style.display = 'none';
+              }})()">Orquestas</h3>
+              <div id="orchestras_tablePerformer">
+                </div>
+        </div>
+      </div>
+      <!-- END PERFORMERS LIST. -->
+
+      <!-- AGREGAR -->
+      <div class="w3-card w3-padding-0 color-whitesmoke">
+        <div class="w3-center w3-padding-64">
+          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+        </div>
+
+        <!-- MENU: TIPO DE INTERPRETE-->
+        <div class="w3-section ">
+          <h3>Tipo de interprete</h3>
+          <ul id="performerType" class="w3-ul ">
+            <li class="w3-hover-blue cursor-pointer" onclick="selectType_Performer(this, 0);">Solista</li>
+            <li class="w3-hover-black cursor-pointer" onclick="selectType_Performer(this, 1);">Grupo</li>
+            <li class="w3-hover-orange cursor-pointer" onclick="selectType_Performer(this, 2);">Orquesta</li>
+          </ul>
+        </div>
+
+
+        <!-- SOLISTA. -->
+        <div style="display: block" id="lonePerformer" class="w3-card w3-blue w3-padding-small">
+
+          <!-- Nombre. -->
+          <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
+            <h3>Nombre</h3>
+            <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="nameMember_lonePerformer">
+          </div>
+
+          <!-- FUNCION. -->
+          <div class="w3-section ">
+            <h3>Función</h3>
+            <form>
+              <label class="checkbox">
+                <input type="checkbox" onclick="vocalist = !vocalist;" value="">Vocalista
+              </label>
+              <label class="radio-inline w3-padding-small">
+                <input onclick="role = -1;" type="radio" name="optradio">Sin instrumento</label>
+              <label class="radio-inline w3-padding-small">
+                <input onclick="role = 0;" type="radio" name="optradio">Guitarrista</label>
+              <label class="radio-inline w3-padding-small">
+                <input onclick="role = 1;" type="radio" name="optradio">Pianista</label>
+              <label class="radio-inline w3-padding-small">
+                <input onclick="role = 2;" type="radio" name="optradio">Baterista</label>
+              <label class="radio-inline w3-padding-small">
+                <input onclick="role = 3;" type="radio" name="optradio">Bajista</label>
+              </label>
+            </form>
+          </div>
+
+          <!-- HECHO. -->
+          <label type="submit" class="w3-button w3-block w3-black" onclick="addPerformer(0)">Hecho</label>
+
+          <!-- END SOLISTA. -->
+        </div>
+
+        <!-- GRUPO. -->
+        <div style="display: none" id="groupPerformer" class="w3-card w3-black w3-padding-small">
+
+          <!-- Nombre. -->
+          <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
+            <h3>Nombre</h3>
+            <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="name_groupPerformer">
+          </div>
+
+          <!-- Miembros. -->
+          <div class="w3-section ">
+            <h3>Miembros</h3>
+
+            <!-- Botones de añadir miembro.-->
+            <label>Vocalista
+              <button onclick="typeMember_groupPerformer = 0; document.getElementById('add_typeMember_groupPerformer').style.display = 'block';"
+                class="w3-button w3-circle w3-card-4 w3-light-gray w3-hover-pink">+</button>
+            </label>
+            <label>Guitarrista
+              <button onclick="typeMember_groupPerformer = 1; document.getElementById('add_typeMember_groupPerformer').style.display = 'block';"
+                class="w3-button w3-circle w3-card-4 w3-light-gray w3-hover-teal">+</button>
+            </label>
+            <label>Pianista
+              <button onclick="typeMember_groupPerformer = 2; document.getElementById('add_typeMember_groupPerformer').style.display = 'block';"
+                class="w3-button w3-circle w3-card-4 w3-light-gray w3-hover-green">+</button>
+            </label>
+            <label>Baterista
+              <button onclick="typeMember_groupPerformer = 3; document.getElementById('add_typeMember_groupPerformer').style.display = 'block';"
+                class="w3-button w3-circle w3-card-4 w3-light-gray w3-hover-brown">+</button>
+            </label>
+            <label>Bajista
+              <button onclick="typeMember_groupPerformer = 4; document.getElementById('add_typeMember_groupPerformer').style.display = 'block';"
+                class="w3-button w3-circle w3-card-4 w3-light-gray w3-hover-purple">+</button>
+            </label>
+
+            <div style="display: none" id="add_typeMember_groupPerformer" class="w3-section w3-card">
+              <h3>Nombre</h3>
+              <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="nameMember_groupPerformer">
+              <h3>Edad</h3>
+              <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="number" id="ageMember_groupPerformer">
+              <label type="submit" class="w3-button w3-block w3-white w3-hover-black w3-padding-small" onclick="addMember_groupPerformer()">Añadir</label>
+            </div>
+
+
+            <!-- Miembros agregados. -->
+            <h3>Miembros agregados</h3>
+            <div class="w3-section ">
+              <ul id="addedMember_groupPerformer" class="w3-ul"> </ul>
+            </div>
+
+          </div>
+
+
+          <!-- HECHO. -->
+          <label type="submit" class="w3-button w3-block w3-white" onclick="addPerformer(1)">Hecho</label>
+
+          <!-- END GRUPO. -->
+        </div>
+
+        <!-- ORQUESTA. -->
+        <div style="display: none" id="orchestraPerformer" class="w3-card w3-orange w3-padding-small">
+
+          <!-- Nombre. -->
+          <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
+            <h3>Nombre</h3>
+            <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="name_orchestraPerformer">
+          </div>
+          <!-- Origen. -->
+          <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
+            <h3>Orígen</h3>
+            <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="origin_orchestraPerformer">
+          </div>
+          <!-- Director. -->
+          <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
+            <h3>Director</h3>
+            <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="director_orchestraPerformer">
+          </div>
+
+          <!-- HECHO. -->
+          <label type="submit" class="w3-button w3-block w3-black" onclick="addPerformer(2)">Hecho</label>
+
+          <!-- END ORQUESTA -->
+        </div>
+
+
+      </div>
+
+      <!-- END INTERPRETES -->
+    </div>
 
   </div>
 
