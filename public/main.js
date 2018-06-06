@@ -174,20 +174,21 @@ function refresh_tablePerformers() {
 
                     // GROUP
                 } else if (intern.val().type == "group") {
-                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table id='in_group_tablePerformer'class='w3-table w3-centered w3-animate-opacity'>";
-                    document.getElementById("group_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
+
                     firebase.database().ref('/performers/' + data.key + "/members").once('value').then(function (mems) {
+                        newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table id='in_group_tablePerformer" + data.key + "' class='w3-table w3-centered w3-animate-opacity'>";
+                        document.getElementById("group_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
                         mems.forEach(function (m) {
                             newRow = "<tr class=' w3-center'>";
                             newRow += "<th>" + m.val().name + "</th>";
                             newRow += "<th>" + m.val().age + " años</th>";
                             newRow += "<th>" + m.val().role + "</th>";
                             newRow += "</tr>";
-                            document.getElementById("in_group_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
+                            document.getElementById('in_group_tablePerformer' + data.key).insertAdjacentHTML('beforeEnd', newRow);
                         });
+                        newRow = "</table></div>";
+                        document.getElementById("group_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
                     });
-                    newRow = "</table></div>";
-                    document.getElementById("group_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
 
                     // ORCHESTRA
                 } else if (intern.val().type == "orchestra") {
@@ -282,6 +283,7 @@ function addPerformer(i) {
         }
         var newMembers = "{" + memberList_groupPerformer.substring(0, memberList_groupPerformer.lastIndexOf(",")) + "}";
 
+        console.log(newMembers);
         // TRANSACCION PRINCIPAL
         firebase.database().ref('performers/' + UID).set({
             type: "group",
@@ -349,7 +351,7 @@ function addMember_groupPerformer() {
 
     memberList_groupPerformer += '"' + counter_memberList_groupPerformer + '": {"name": "' + document.getElementById("nameMember_groupPerformer").value + '",' +
         '"role": "' + temp + '",'
-        + '"age": ' + document.getElementById("ageMember_groupPerformer").value + '},';
+        + '"age": "' + document.getElementById("ageMember_groupPerformer").value + '"},';
 
 
     var newHTML = '<li class="w3-hover-' + color + '">' + document.getElementById("nameMember_groupPerformer").value + " - " + temp + '</li>';
@@ -363,12 +365,18 @@ function addMember_groupPerformer() {
 /* PRODUCTORAS._______________________________________________________________________________________________________________________________ */
 
 function initProducerPage() {
+    var div = document.getElementById('table_producers');
+    while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
+
     document.getElementById("nameProducer").value = "";
     document.getElementById("locationProducer").value = "";
     document.getElementById("ratingProducer").value = "";
     refreshProducers();
 }
 function refreshProducers() {
+
     // Render
     return firebase.database().ref('/producers').once('value').then(function (snapshot) {
         // FOR_EACH
@@ -407,22 +415,75 @@ var authorLyrics_counter = 0;
 var authorLyrics_List = "";
 var authorMusic_counter = 0;
 var authorMusic_List = "";
+var songPerformer_List = "";
+var songPerformer_counter = 0;
+var songSupport_List = "";
+var songSupport_counter = 0;
 
 function initSongPage() {
-    authorLyrics_counter = 0;
-    authorMusic_counter = 0;
     authorType = 0;
+    authorLyrics_counter = 0;
     authorLyrics_List = "";
+    authorMusic_counter = 0;
     authorMusic_List = "";
+    songPerformer_List = "";
+    songPerformer_counter = 0;
+    songSupport_List = "";
+    songSupport_counter = 0;
     document.getElementById("nameAuthor").value = "";
+    refreshSongPerformers();
 }
 
-function addSong() { 
+function addSong() {
+    // GENERATE A UNIQUE ID BY DATE
+    var fecha = new Date();
+    var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
 
+    var json0 = "{" + songPerformer_List.substring(0, songPerformer_List.lastIndexOf(",")) + "}";
+    var json1 = "{" + songSupport_List.substring(0, songSupport_List.lastIndexOf(",")) + "}";
+    var json2 = "{" + authorLyrics_List.substring(0, authorLyrics_List.lastIndexOf(",")) + "}";
+    var json3 = "{" + authorMusic_List.substring(0, authorMusic_List.lastIndexOf(",")) + "}";
+
+    // TRANSACCION PRINCIPAL
+    var name = document.getElementById("nameSong").value;
+
+    var jsonPerformers = JSON && JSON.parse(json0) || $.parseJSON(json0);
+    firebase.database().ref('songs/' + UID).set({
+        name: name,
+        performers: jsonPerformers,
+        supports: JSON && JSON.parse(json1) || $.parseJSON(json1),
+        authorLyrics: JSON && JSON.parse(json2) || $.parseJSON(json2),
+        authorMusic: JSON && JSON.parse(json3) || $.parseJSON(json3),
+    });
+
+    for (i = 0; i < Object.keys(jsonPerformers).length; i++) {
+        jsonSong = '{"' + UID + '": {"name":"' + name + '"}}';
+        firebase.database().ref('performers/' + jsonPerformers[i].id + "/songs").update(JSON && JSON.parse(jsonSong) || $.parseJSON(jsonSong), );
+
+    }
+
+    // RESETEO DE VARIABLES Y CAMPOS
+    initSongPage();
+    var div = document.getElementById('songPerformers_Selected');
+    while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
 }
 
-
-function refreshSongs() { 
+function refreshSongs() {
+    return firebase.database().ref('/songs').once('value').then(function (snapshot) {
+        // FOR_EACH
+        snapshot.forEach(function (data) {
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "</h4>";
+            newRow += "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>Autores</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr class='w3-light-gray w3-center'>";
+            for(i = 0; i < Object.keys(data.val().authorLyrics.val()).length; i++){}
+            newRow += "<th>" + data.val().authorLyrics.val() + "</th>";
+            newRow += "<th>" + data.val().rating + "</th>";
+            newRow += "</tr></table></div>";
+            document.getElementById("table_producers").insertAdjacentHTML('beforeEnd', newRow);
+        });
+    });
 
 }
 
@@ -439,87 +500,77 @@ function addAuthor() {
     if (authorType == 0) {
         temp = "Autor de Letra";
         color = "blue";
-        authorLyrics_List += authorLyrics_counter + ': {"name": "' + document.getElementById("nameAuthor").value + '"},';
+        authorLyrics_List += '"' + authorLyrics_counter + '": {"name": "' + document.getElementById("nameAuthor").value + '"},';
         authorLyrics_counter += 1;
     } else {
         temp = "Autor de Música";
         color = "orange";
-        authorLyrics_List += authorMusic_counter + ': {"name": "' + document.getElementById("nameAuthor").value + '"},';
+        authorMusic_List += '"' + authorMusic_counter + '": {"name": "' + document.getElementById("nameAuthor").value + '"},';
         authorMusic_counter += 1;
     }
-
     var newHTML = '<li class="w3-hover-' + color + '">' + document.getElementById("nameAuthor").value + " - " + temp + '</li>';
     document.getElementById("added_authorLyrics").insertAdjacentHTML('beforeEnd', newHTML);
     document.getElementById("nameAuthor").value = "";
-
 }
 
-
-function refresh_tablePerformers() {
-    // Vars
-    var newRow = "";
-
-    // Clean
-    var div = document.getElementById('lone_tablePerformer');
+function refreshSongPerformers() {
+    var div = document.getElementById('songPerformers_available');
     while (div.hasChildNodes()) {
         div.removeChild(div.lastChild);
     }
-    // Render
+
     return firebase.database().ref('/performers').once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
+            var type = "";
+            if (data.val().type == "single") {
+                type = "Solista";
+            } else if (data.val().type == "group") {
+                type = "Grupo";
+            } else if (data.val().type == "orchestra") {
+                type = "Orquesta";
+            }
             // REAL_CAPTURE
-            firebase.database().ref('/performers/' + data.key).once('value').then(function (intern) {
-
-                newRow = "";
-                // SINGLE 
-                if (intern.val().type == "single") {
-                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
-                    newRow += "<tr class='w3-light-gray w3-center'>";
-                    if (intern.val().vocalist == true) {
-                        newRow += "<th>Vocalista</th>";
-                    }
-                    if (intern.val().instrument == 0) { newRow += "<th>Guitarrista</th>"; }
-                    else if (intern.val().instrument == 1) { newRow += "<th>Pianista</th>"; }
-                    else if (intern.val().instrument == 2) { newRow += "<th>Baterista</th>"; }
-                    else if (intern.val().instrument == 3) { newRow += "<th>Bajista</th>"; }
-                    try {
-                        newRow += "<th>Canciones</th>";
-                    } catch (error) {
-
-                    }
-                    newRow += "</tr></table></div>";
-                    document.getElementById("lone_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
-
-                    // GROUP
-                } else if (intern.val().type == "group") {
-                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table id='in_group_tablePerformer'class='w3-table w3-centered w3-animate-opacity'>";
-                    document.getElementById("group_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
-                    firebase.database().ref('/performers/' + data.key + "/members").once('value').then(function (mems) {
-                        mems.forEach(function (m) {
-                            newRow = "<tr class=' w3-center'>";
-                            newRow += "<th>" + m.val().name + "</th>";
-                            newRow += "<th>" + m.val().age + " años</th>";
-                            newRow += "<th>" + m.val().role + "</th>";
-                            newRow += "</tr>";
-                            document.getElementById("in_group_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
-                        });
-                    });
-                    newRow = "</table></div>";
-                    document.getElementById("group_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
-
-                    // ORCHESTRA
-                } else if (intern.val().type == "orchestra") {
-                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table class='w3-table w3-centered w3-animate-opacity'>";
-                    newRow += "<tr class=' w3-center'>";
-                    newRow += "<th>" + intern.val().origin + "</th>";
-                    newRow += "<th>" + intern.val().director + "</th>";
-                    newRow += "</tr></table></div>";
-                    document.getElementById("orchestras_tablePerformer").insertAdjacentHTML('beforeEnd', newRow);
-                }
-            });
+            var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().name + " - " + type + '<span onclick="add_SelectedSongPerformer(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
+            document.getElementById("songPerformers_available").insertAdjacentHTML('beforeEnd', newHTML);
             // END REAL_CAPTURE
         });
         // END FOR_EACH
     });
+}
+
+function add_SelectedSongPerformer(o) {
+    o.parentElement.style.display = 'none';
+    var newNode = '"id"' + ': "' + o.parentElement.getAttribute("id") + '"';
+    songPerformer_List += '"' + songPerformer_counter + '": {' + newNode + "},";
+    songPerformer_counter += 1;
+    var newHTML = '<li id="' + o.parentElement.getAttribute("id") + '"class="w3-display-container w3-hover-black">' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '</li>';
+    document.getElementById("songPerformers_Selected").insertAdjacentHTML('beforeEnd', newHTML);
+}
+
+function refreshSongSupports() {
+    var div = document.getElementById('songSupports_available');
+    while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
+
+    return firebase.database().ref('/supports').once('value').then(function (snapshot) {
+        // FOR_EACH
+        snapshot.forEach(function (data) {
+            // REAL_CAPTURE
+            // var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().name + " - " + type + '<span onclick="add_SelectedSongSupport(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
+            // document.getElementById("songSupports_available").insertAdjacentHTML('beforeEnd', newHTML);
+            // END REAL_CAPTURE
+        });
+        // END FOR_EACH
+    });
+}
+
+function add_SelectedSongSupport(o) {
+    o.parentElement.style.display = 'none';
+    var newNode = '"id"' + ': "' + o.parentElement.getAttribute("id") + '"';
+    songSupport_List += songSupport_counter + ': {' + newNode + "},";
+    songSupport_counter += 1;
+    var newHTML = '<li id="' + o.parentElement.getAttribute("id") + '"class="w3-display-container w3-hover-black">' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '</li>';
+    document.getElementById("songSupports_Selected").insertAdjacentHTML('beforeEnd', newHTML);
 }

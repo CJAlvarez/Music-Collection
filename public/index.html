@@ -33,7 +33,7 @@
           <a class="w3-bar-item w3-button" onclick=" hideAll('performers'); initPerformerPage()">Interpretes</a>
           <a class="w3-bar-item w3-button">Estilos</a>
           <a class="w3-bar-item w3-button">Textos</a>
-          <a class="w3-bar-item w3-button" onclick=" hideAll('songs'); initPerformerPage()">Canciones</a>
+          <a class="w3-bar-item w3-button" onclick=" hideAll('songs'); initSongPage()">Canciones</a>
           <a class="w3-bar-item w3-button">Soportes</a>
           <a class="w3-bar-item w3-button" onclick=" hideAll('producers'); initProducerPage()">Productoras</a>
         </div>
@@ -331,7 +331,7 @@
       <!-- TITLE. -->
       <h2 class="w3-wide">Canciones</h2>
       <p class="w3-opacity">
-        <i>... .</i>
+        <i>... Donde las palabras fallan, la música habla.</i>
       </p>
       <!-- END TITLE. -->
 
@@ -387,12 +387,27 @@
         </div>
 
         <!-- Interprete seleccionado. -->
-        <h3>Interprete</h3>
-
-        <!-- Autores agregados. -->
-        <h3>Interpretes agregados</h3>
+        <h3>Interpretes</h3>
         <div class="w3-section ">
-          <ul id="added_performer" class="w3-ul"> </ul>
+          <ul id="songPerformers_available" class="w3-ul "> </ul>
+        </div>
+
+        <!-- LISTA SELECCIONADA. -->
+        <h3>Interpretes Seleccionados</h3>
+        <div class="w3-section ">
+          <ul id="songPerformers_Selected" class="w3-ul "> </ul>
+        </div>
+        
+        <!-- Soporte seleccionado. -->
+        <h3>Soportes</h3>
+        <div class="w3-section ">
+          <ul id="songSupports_available" class="w3-ul "> </ul>
+        </div>
+
+        <!-- LISTA SELECCIONADA. -->
+        <h3>Soportes Seleccionados</h3>
+        <div class="w3-section ">
+          <ul id="songSupports_Selected" class="w3-ul "> </ul>
         </div>
 
         <!-- HECHO. -->
