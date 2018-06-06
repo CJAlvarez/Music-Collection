@@ -24,29 +24,18 @@
       <a href="#" class="w3-bar-item w3-button w3-padding-large">
         <i class="fa fa-home" style="font-size:25px;"></i>
       </a>
-      <a href="#collection" class="w3-bar-item w3-button w3-padding-large w3-hide-small" onclick=" hideAll('collections');">Mi Colección</a>
+      <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" onclick=" hideAll('collections');">Mi Colección</a>
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-padding-large w3-button" title="More">Acerca de...
           <i class="fa fa-caret-down"></i>
         </button>
         <div class="w3-dropdown-content w3-bar-block w3-card-4">
-          <a href="#" class="w3-bar-item w3-button" onclick=" hideAll('performers'); initPerformerPage()">Interpretes</a>
-          <a href="#" class="w3-bar-item w3-button">Estilos</a>
-          <a href="#" class="w3-bar-item w3-button">Textos</a>
-          <a href="#" class="w3-bar-item w3-button">Canciones</a>
-          <a href="#" class="w3-bar-item w3-button">Soportes</a>
-        </div>
-      </div>
-      <div class="w3-dropdown-hover w3-hide-small">
-        <button class="w3-padding-large w3-button" title="More">Agregar
-          <i class="fa fa-caret-down"></i>
-        </button>
-        <div class="w3-dropdown-content w3-bar-block w3-card-4">
-          <a href="#" class="w3-bar-item w3-button" onclick=" hideAll('collections'); initPerformerPage()">Interprete</a>
-          <a href="#" class="w3-bar-item w3-button">Estilo</a>
-          <a href="#" class="w3-bar-item w3-button">Texto</a>
-          <a href="#" class="w3-bar-item w3-button">Canción</a>
-          <a href="#" class="w3-bar-item w3-button">Soporte</a>
+          <a class="w3-bar-item w3-button" onclick=" hideAll('performers'); initPerformerPage()">Interpretes</a>
+          <a class="w3-bar-item w3-button">Estilos</a>
+          <a class="w3-bar-item w3-button">Textos</a>
+          <a class="w3-bar-item w3-button" onclick=" hideAll('songs'); initPerformerPage()">Canciones</a>
+          <a class="w3-bar-item w3-button">Soportes</a>
+          <a class="w3-bar-item w3-button" onclick=" hideAll('producers'); initProducerPage()">Productoras</a>
         </div>
       </div>
       <a href="javascript:void(0)" class="w3-padding-large w3-hover-red w3-hide-small w3-right">
@@ -115,8 +104,8 @@
               } else {
                   document.getElementById('group_tablePerformer').style.display = 'none';
               }})()">Grupos</h3>
-              <div id="group_tablePerformer">
-                </div>
+          <div id="group_tablePerformer">
+          </div>
         </div>
 
         <!-- Orquestas Lista. -->
@@ -127,14 +116,14 @@
               } else {
                   document.getElementById('orchestras_tablePerformer').style.display = 'none';
               }})()">Orquestas</h3>
-              <div id="orchestras_tablePerformer">
-                </div>
+          <div id="orchestras_tablePerformer">
+          </div>
         </div>
       </div>
       <!-- END PERFORMERS LIST. -->
 
       <!-- AGREGAR -->
-      <div class="w3-card w3-padding-0 color-whitesmoke">
+      <div id="tag-add-performer" class="w3-card w3-padding-0 color-whitesmoke">
         <div class="w3-center w3-padding-64">
           <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
         </div>
@@ -163,19 +152,24 @@
           <div class="w3-section ">
             <h3>Función</h3>
             <form>
-              <label class="checkbox">
-                <input type="checkbox" onclick="vocalist = !vocalist;" value="">Vocalista
+              <label class="checkbox"> Vocalista
+                <input type="checkbox" onclick="vocalist = !vocalist;" value="">
               </label>
-              <label class="radio-inline w3-padding-small">
-                <input onclick="role = -1;" type="radio" name="optradio">Sin instrumento</label>
-              <label class="radio-inline w3-padding-small">
-                <input onclick="role = 0;" type="radio" name="optradio">Guitarrista</label>
-              <label class="radio-inline w3-padding-small">
-                <input onclick="role = 1;" type="radio" name="optradio">Pianista</label>
-              <label class="radio-inline w3-padding-small">
-                <input onclick="role = 2;" type="radio" name="optradio">Baterista</label>
-              <label class="radio-inline w3-padding-small">
-                <input onclick="role = 3;" type="radio" name="optradio">Bajista</label>
+              <label class="radio-inline w3-padding-small"> Sin instrumento
+                <input onclick="role = -1;" type="radio" name="optradio">
+              </label>
+              <label class="radio-inline w3-padding-small"> Guitarrista
+                <input onclick="role = 0;" type="radio" name="optradio">
+              </label>
+              <label class="radio-inline w3-padding-small"> Pianista
+                <input onclick="role = 1;" type="radio" name="optradio">
+              </label>
+              <label class="radio-inline w3-padding-small"> Baterista
+                <input onclick="role = 2;" type="radio" name="optradio">
+              </label>
+              <label class="radio-inline w3-padding-small"> Bajista
+                <input onclick="role = 3;" type="radio" name="optradio">
+              </label>
               </label>
             </form>
           </div>
@@ -276,7 +270,147 @@
       <!-- END INTERPRETES -->
     </div>
 
+
+    <!-- PRODUCTORAS. _____________________________________________________________________________________________________________________________  -->
+    <div class="w3-container w3-center w3-padding-64" style="display:none;" id="producers">
+
+      <!-- TITLE. -->
+      <h2 class="w3-wide">Productoras</h2>
+      <p class="w3-opacity">
+        <i>... Llenando el cielo de estrellas.</i>
+      </p>
+      <!-- END TITLE. -->
+
+      <!-- PRODUCERS.-->
+      <div id="producers-list w3-responsive">
+        <!-- Grupos Lista. -->
+        <div class="w3-section w3-card">
+          <h3 class="w3-hover-sand w3-black" style="cursor:pointer;" onclick="(function() {
+        if(document.getElementById('table_producers').style.display == 'none'){
+            document.getElementById('table_producers').style.display = 'block';
+        } else {
+            document.getElementById('table_producers').style.display = 'none';
+        }})()">Productoras</h3>
+          <div id="table_producers" style="display:none;">
+          </div>
+        </div>
+
+      </div>
+      <!-- END PRODUCERS. -->
+
+      <!-- AGREGAR -->
+      <div class="w3-card w3-padding-0 color-whitesmoke">
+        <div class="w3-center w3-padding-64">
+          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+        </div>
+
+        <!-- ADD PRODUCER. -->
+        <div id="add_producer" class="w3-section w3-card">
+          <h3>Nombre</h3>
+          <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="nameProducer">
+          <h3>Localidad</h3>
+          <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="locationProducer">
+          <h3>Rating</h3>
+          <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="ratingProducer">
+
+        </div>
+        <!-- HECHO. -->
+        <label type="submit" class="w3-button w3-block w3-black" onclick="addProducer()">Hecho</label>
+
+
+        <!-- END AGREGAR-->
+      </div>
+
+      <!-- END PRODUCTORAS-->
+    </div>
+
+
+    <!-- CANCIONES. _____________________________________________________________________________________________________________________________  -->
+    <div class="w3-container w3-center w3-padding-64" style="display:none;" id="songs">
+
+      <!-- TITLE. -->
+      <h2 class="w3-wide">Canciones</h2>
+      <p class="w3-opacity">
+        <i>... .</i>
+      </p>
+      <!-- END TITLE. -->
+
+      <!-- SONGS.-->
+      <div id="songs-list w3-responsive">
+        <!-- Grupos Lista. -->
+        <div class="w3-section w3-card">
+          <h3 class="w3-hover-sand w3-black" style="cursor:pointer;" onclick="(function() {
+        if(document.getElementById('table_songs').style.display == 'none'){
+            document.getElementById('table_songs').style.display = 'block';
+        } else {
+            document.getElementById('table_songs').style.display = 'none';
+        }})()">Canciones</h3>
+          <div id="table_songs" style="display:none;">
+          </div>
+        </div>
+
+      </div>
+      <!-- END SONGS. -->
+
+      <!-- AGREGAR -->
+      <div class="w3-card w3-padding-0 color-whitesmoke">
+        <div class="w3-center w3-padding-64">
+          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+        </div>
+
+        <!-- Nombre. -->
+        <div class="w3-section" style="padding-left: 20px; padding-right: 20px;">
+          <h3>Nombre</h3>
+          <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="nameSong">
+        </div>
+
+        <!-- Autores agregados. -->
+        <h3>Autores</h3>
+
+        <label>Autor de Letra
+          <button onclick="authorType = 0; document.getElementById('add_author').style.display = 'block';" class="w3-button w3-circle w3-card-4 w3-black w3-hover-blue">+</button>
+        </label>
+        <label>Autor de Música
+          <button onclick="authorType = 1; document.getElementById('add_author').style.display = 'block';" class="w3-button w3-circle w3-card-4 w3-black w3-hover-orange">+</button>
+        </label>
+
+        <div style="display: none" id="add_author" class="w3-section w3-card">
+          <h3>Nombre</h3>
+          <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="nameAuthor">
+          <label type="submit" class="w3-button w3-block w3-white w3-hover-black w3-padding-small" onclick="addAuthor()">Añadir</label>
+        </div>
+
+        <!-- Autores agregados. -->
+        <h3>Autores agregados</h3>
+        <div class="w3-section ">
+          <ul id="added_authorLyrics" class="w3-ul"> </ul>
+        </div>
+
+        <!-- Interprete seleccionado. -->
+        <h3>Interprete</h3>
+
+        <!-- Autores agregados. -->
+        <h3>Interpretes agregados</h3>
+        <div class="w3-section ">
+          <ul id="added_performer" class="w3-ul"> </ul>
+        </div>
+
+        <!-- HECHO. -->
+        <label type="submit" class="w3-button w3-block w3-black" onclick="addSong()">Hecho</label>
+
+        <!-- END AGREGAR-->
+      </div>
+
+      <!-- END CANCIONES-->
+    </div>
+
+
   </div>
+
+  <!-- FOOTER. -->
+  <footer class="w3-container ">
+    <p>Copyright (C) 2018 X-Men Arts. </p>
+  </footer>
 
   <script src="main.js"></script>
 </body>
