@@ -15,6 +15,8 @@
   <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 
 <body>
@@ -386,6 +388,25 @@
           <ul id="added_authorLyrics" class="w3-ul"> </ul>
         </div>
 
+        <!-- Estilo base. -->
+        <h3>Estilo base</h3>
+        <div class="w3-section dropdown">
+          <select class="form-control" id="styleBase">
+          </select>
+        </div>
+
+        <!-- Estilos infuyentes -->
+        <h3>Estilos influyentes</h3>
+        <div class="w3-section ">
+          <ul id="styleExtra_available" class="w3-ul "> </ul>
+        </div>
+
+        <!-- LISTA SELECCIONADA. -->
+        <h3>Estilos Seleccionados</h3>
+        <div class="w3-section ">
+          <ul id="styleExtra_Selected" class="w3-ul "> </ul>
+        </div>
+
         <!-- Interprete seleccionado. -->
         <h3>Interpretes</h3>
         <div class="w3-section ">
@@ -397,7 +418,7 @@
         <div class="w3-section ">
           <ul id="songPerformers_Selected" class="w3-ul "> </ul>
         </div>
-        
+
         <!-- Soporte seleccionado. -->
         <h3>Soportes</h3>
         <div class="w3-section ">
