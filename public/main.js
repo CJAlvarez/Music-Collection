@@ -15,6 +15,7 @@ function hideAll(id) {
     document.getElementById("performers").style.display = "none";
     document.getElementById("producers").style.display = "none";
     document.getElementById("songs").style.display = "none";
+    document.getElementById("styles").style.display = "none";
     document.getElementById(id).style.display = "block";
 }
 
@@ -395,7 +396,7 @@ function addProducer() {
 }
 
 /* CANCIONES._______________________________________________________________________________________________________________________________ */
-
+var songStyleBase = "";
 var authorType = 0;
 var authorLyrics_counter = 0;
 var authorLyrics_List = "";
@@ -405,8 +406,11 @@ var songPerformer_List = "";
 var songPerformer_counter = 0;
 var songSupport_List = "";
 var songSupport_counter = 0;
+var songStyle_List = "";
+var songStyle_counter = 0;
 
 function initSongPage() {
+    songStyleBase = "";
     authorType = 0;
     authorLyrics_counter = 0;
     authorLyrics_List = "";
@@ -416,16 +420,20 @@ function initSongPage() {
     songPerformer_counter = 0;
     songSupport_List = "";
     songSupport_counter = 0;
+    songStyle_List = "";
+    songStyle_counter = 0;
     document.getElementById("nameAuthor").value = "";
     document.getElementById("nameSong").value = "";
 
     removeDivs('added_authorLyrics');
     removeDivs('songSupports_Selected');
     removeDivs('songPerformers_Selected');
+    removeDivs('styleExtra_Selected');
 
     refreshSongPerformers();
     refreshSongs();
     refreshSongSupports();
+    refreshSongStyles();
 }
 
 function addSong() {
@@ -434,13 +442,17 @@ function addSong() {
         var color = "blue";
         authorLyrics_List += '"' + authorLyrics_counter + '": {"name": "Desconocido"},';
         authorLyrics_counter += 1;
-
     }
     if (authorMusic_counter == 0) {
         var temp = "Autor de Música";
         var color = "orange";
         authorMusic_List += '"' + authorMusic_counter + '": {"name": "Desconocido"},';
         authorMusic_counter += 1;
+    }
+    if (songStyle_counter == 0) {
+        var newNode = '"id": "0"';
+        songStyle_List += '"' + songStyle_counter + '": {' + newNode + "},";
+        songStyle_counter += 1;
     }
 
     if (songPerformer_counter == 0) {
@@ -461,6 +473,7 @@ function addSong() {
     var json1 = "{" + songSupport_List.substring(0, songSupport_List.lastIndexOf(",")) + "}";
     var json2 = "{" + authorLyrics_List.substring(0, authorLyrics_List.lastIndexOf(",")) + "}";
     var json3 = "{" + authorMusic_List.substring(0, authorMusic_List.lastIndexOf(",")) + "}";
+    var json4 = "{" + songStyle_List.substring(0, songStyle_List.lastIndexOf(",")) + "}";
 
     // TRANSACCION PRINCIPAL
     var name = document.getElementById("nameSong").value;
@@ -469,9 +482,11 @@ function addSong() {
     firebase.database().ref('songs/' + UID).set({
         name: name,
         performers: jsonPerformers,
+        styleBase: songStyleBase,
         supports: JSON && JSON.parse(json1) || $.parseJSON(json1),
         authorLyrics: JSON && JSON.parse(json2) || $.parseJSON(json2),
         authorMusic: JSON && JSON.parse(json3) || $.parseJSON(json3),
+        styles: JSON && JSON.parse(json4) || $.parseJSON(json4)
     });
 
     for (i = 0; i < Object.keys(jsonPerformers).length; i++) {
@@ -503,6 +518,26 @@ function refreshSongs() {
             newRow += "<tr class='w3-light-gray w3-center'>";
             for (i = 0; i < Object.keys(data.val().authorMusic).length; i++) {
                 newRow += "<th>" + data.val().authorMusic[i].name + "</th>";
+            }
+            newRow += "</tr></table>";
+            // Estilo Base
+            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Estilo Base</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr id='songStyleBase" + data.key + "' class='w3-light-gray w3-center'>";
+            firebase.database().ref('/styles/' + data.val().styleBase).once('value').then(function (m) {
+                console.log(m.val().nameStyle);
+                var newRow1 = "<th>" + m.val().nameStyle + "</th>";
+                addHtml("songStyleBase" + data.key, newRow1);
+            });
+            newRow += "</tr></table>";
+            // Estilos influyentes
+            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Estilos Influyentes</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr id='songStyles_list" + data.key + "' class='w3-light-gray w3-center'>";
+            for (i = 0; i < Object.keys(data.val().styles).length; i++) {
+                firebase.database().ref('/styles/' + data.val().styles[i].id).once('value').then(function (m) {
+                    console.log(m.val().nameStyle);
+                    var newRow1 = "<th>" + m.val().nameStyle + "</th>";
+                    addHtml("songStyles_list" + data.key, newRow1);
+                });
             }
             newRow += "</tr></table>";
             // Interpretes
@@ -586,28 +621,37 @@ function addAuthor() {
 }
 
 function refreshSongStyles() {
-    styleExtra_available
     removeDivs('styleExtra_available');
+    removeDivs('styleBase');
 
     return firebase.database().ref('/styles').once('value').then(function (snapshot) {
         // FOR_EACH
+        var flag = false;
         snapshot.forEach(function (data) {
             // REAL_CAPTURE
-            var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().name + " - " + type + '<span onclick="add_SelectedSongPerformer(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
-            addHtml('songPerformers_available', newHTML);
+            if (data.key != "0") {
+                var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().nameStyle + '<span onclick="add_Selected_SongStyles(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
+                addHtml('styleExtra_available', newHTML);
+            }
+            if (flag == false) {
+                songStyleBase = data.key;
+                flag = true;
+            }
+            var newHTML = '<option id="' + data.key + '"class="w3-display-container w3-hover-black" >' + data.val().nameStyle + '</option>';
+            addHtml('styleBase', newHTML);
             // END REAL_CAPTURE
         });
         // END FOR_EACH
     });
 }
 
-function add_SongStyles(o) {
+function add_Selected_SongStyles(o) {
     o.parentElement.style.display = 'none';
     var newNode = '"id"' + ': "' + o.parentElement.getAttribute("id") + '"';
-    songPerformer_List += '"' + songPerformer_counter + '": {' + newNode + "},";
-    songPerformer_counter += 1;
+    songStyle_List += '"' + songStyle_counter + '": {' + newNode + "},";
+    songStyle_counter += 1;
     var newHTML = '<li id="' + o.parentElement.getAttribute("id") + '"class="w3-display-container w3-hover-black">' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '</li>';
-    addHtml('songPerformers_Selected', newHTML);
+    addHtml('styleExtra_Selected', newHTML);
 }
 
 function refreshSongPerformers() {
@@ -666,3 +710,55 @@ function add_SelectedSongSupport(o) {
     addHtml('songSupports_Selected', newHTML);
 }
 
+/* ESTILOS._______________________________________________________________________________________________________________________________ */
+
+function initStylePage() {
+    var div = document.getElementById('table_styles');
+    while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
+
+    document.getElementById("nameStyle").value = "";
+    document.getElementById("baseStyle").value = "";
+    document.getElementById("originStyle").value = "";
+    document.getElementById("fatherStyle").value = "";
+
+    refreshStyles();
+}
+function refreshStyles() {
+    console.log('refresca Estilos');
+    // Render
+    return firebase.database().ref('/styles').once('value').then(function (snapshot) {
+        // FOR_EACH
+        snapshot.forEach(function (data) {
+            if (data.key != "0") {
+                var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().nameStyle + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+                newRow += "<tr class='w3-light-gray w3-center'>";
+                newRow += "<th>" + data.val().father + "</th>";
+                newRow += "<th>" + data.val().origin + "</th>";
+
+                newRow += "</tr></table></div>";
+                document.getElementById("table_styles").insertAdjacentHTML('beforeEnd', newRow);
+            }
+        });
+    });
+}
+function addStyles() {
+    if (document.getElementById("nameStyle").value == "") {
+        alert("Nombre en blanco.");
+        return null;
+    }
+    // GENERATE A UNIQUE ID BY DATE
+    var fecha = new Date();
+    var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+
+    // TRANSACCION PRINCIPAL
+    firebase.database().ref('styles/' + UID).set({
+        nameStyle: document.getElementById("nameStyle").value,
+        origin: document.getElementById("originStyle").value,
+        baseStyle: document.getElementById("baseStyle").value,
+        father: document.getElementById("fatherStyle").value
+
+    });
+    initStylePage();
+}
