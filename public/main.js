@@ -11,11 +11,11 @@ firebase.initializeApp(config);
 
 function hideAll(id) {
     console.log(id);
-    document.getElementById("collections").style.display = "none";
     document.getElementById("performers").style.display = "none";
     document.getElementById("producers").style.display = "none";
     document.getElementById("songs").style.display = "none";
     document.getElementById("styles").style.display = "none";
+    document.getElementById("supports").style.display = "none";
     document.getElementById(id).style.display = "block";
 }
 
@@ -370,8 +370,8 @@ function refreshProducers() {
         snapshot.forEach(function (data) {
             var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr class='w3-light-gray w3-center'>";
-            newRow += "<th>" + data.val().location + "</th>";
-            newRow += "<th>" + data.val().rating + "</th>";
+            newRow += "<th>Localidad: " + data.val().location + "</th>";
+            newRow += "<th>Rating: " + data.val().rating + "</th>";
             newRow += "</tr></table></div>";
             addHtml('table_producers', newRow);
         });
@@ -430,9 +430,9 @@ function initSongPage() {
     removeDivs('songPerformers_Selected');
     removeDivs('styleExtra_Selected');
 
+    refreshSongSupports();
     refreshSongPerformers();
     refreshSongs();
-    refreshSongSupports();
     refreshSongStyles();
 }
 
@@ -477,6 +477,12 @@ function addSong() {
 
     // TRANSACCION PRINCIPAL
     var name = document.getElementById("nameSong").value;
+    for (i = 0; i < document.getElementById("styleBase").childElementCount; i++) {
+        if (document.getElementById("styleBase").children[i].value == document.getElementById("styleBase").value) {
+            songStyleBase = document.getElementById("styleBase").children[i].getAttribute("id");
+            break;
+        }
+    }
 
     var jsonPerformers = JSON && JSON.parse(json0) || $.parseJSON(json0);
     firebase.database().ref('songs/' + UID).set({
@@ -547,22 +553,20 @@ function refreshSongs() {
                 firebase.database().ref('/performers/' + data.val().performers[i].id).once('value').then(function (m) {
                     console.log(m.val().name);
                     var newRow1 = "<th>" + m.val().name + "</th>";
-
                     addHtml("songPerformers_list" + data.key, newRow1);
                 });
             }
             newRow += "</tr></table>";
             // Soporte
             newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Soportes</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
-            newRow += "<tr id='songSupports_list' class='w3-light-gray w3-center'>";
-            // for (i = 0; i < Object.keys(data.val().performers).length; i++) {
-            //     firebase.database().ref('/performers/' + data.val().performers[i].id).once('value').then(function (m) {
-            //         console.log(m.val().name);
-            //         var newRow1 = "<th>" + m.val().name + "</th>";
-
-            //         document.getElementById("songPerformers_list").insertAdjacentHTML('beforeEnd', newRow1);
-            //     });
-            // }
+            newRow += "<tr id='songSupports_list" + data.key + "' class='w3-light-gray w3-center'>";
+            for (i = 0; i < Object.keys(data.val().supports).length; i++) {
+                firebase.database().ref('/supports/' + data.val().supports[i].id).once('value').then(function (m) {
+                    console.log(m.val().name);
+                    var newRow1 = "<th>" + m.val().name + "</th>";
+                    addHtml("songSupports_list" + data.key, newRow1);
+                });
+            }
             newRow += "</tr></table>";
             // Partituras
             newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Partituras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
@@ -630,14 +634,14 @@ function refreshSongStyles() {
         snapshot.forEach(function (data) {
             // REAL_CAPTURE
             if (data.key != "0") {
-                var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().nameStyle + '<span onclick="add_Selected_SongStyles(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
+                var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().nameStyle + '<span onclick=" add_Selected_SongStyles(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
                 addHtml('styleExtra_available', newHTML);
             }
             if (flag == false) {
                 songStyleBase = data.key;
                 flag = true;
             }
-            var newHTML = '<option id="' + data.key + '"class="w3-display-container w3-hover-black" >' + data.val().nameStyle + '</option>';
+            var newHTML = '<option id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().nameStyle + '</option>';
             addHtml('styleBase', newHTML);
             // END REAL_CAPTURE
         });
@@ -693,12 +697,21 @@ function refreshSongSupports() {
         // FOR_EACH
         snapshot.forEach(function (data) {
             // REAL_CAPTURE
-            // var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().name + " - " + type + '<span onclick="add_SelectedSongSupport(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
-            // document.getElementById("songSupports_available").insertAdjacentHTML('beforeEnd', newHTML);
+            var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().name + " - " + data.val().location + '<span onclick="add_SelectedSong_Support(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
+            addHtml('songSupports_available', newHTML);
             // END REAL_CAPTURE
         });
         // END FOR_EACH
     });
+
+}
+
+function add_SelectedSong_Support(o) {
+    o.parentElement.style.display = 'none';
+    songSupport_List += '"' + songSupport_counter + '":{"id" :"' + o.parentElement.getAttribute("id") + '"},';
+    songSupport_counter += 1;
+    var newHTML = '<li id="' + o.parentElement.getAttribute("id") + '"class="w3-display-container w3-hover-black">' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '</li>';
+    addHtml('songSupports_Selected', newHTML);
 }
 
 function add_SelectedSongSupport(o) {
@@ -712,8 +725,21 @@ function add_SelectedSongSupport(o) {
 
 /* ESTILOS._______________________________________________________________________________________________________________________________ */
 
+var influences_List = "";
+var influencesTo_List = "";
+var influences_counter = 0;
+var influencesTo_counter = 0;
+
 function initStylePage() {
+    influences_List = "";
+    influencesTo_List = "";
+    influences_counter = 0;
+    influencesTo_counter = 0;
     var div = document.getElementById('table_styles');
+    while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
+    var div = document.getElementById('added_Styles');
     while (div.hasChildNodes()) {
         div.removeChild(div.lastChild);
     }
@@ -744,6 +770,8 @@ function refreshStyles() {
     });
 }
 function addStyles() {
+
+
     if (document.getElementById("nameStyle").value == "") {
         alert("Nombre en blanco.");
         return null;
@@ -752,13 +780,145 @@ function addStyles() {
     var fecha = new Date();
     var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
 
+    var json2 = "{" + influences_List.substring(0, influences_List.lastIndexOf(",")) + "}";
+    var json1 = "{" + influencesTo_List.substring(0, influencesTo_List.lastIndexOf(",")) + "}";
+
     // TRANSACCION PRINCIPAL
     firebase.database().ref('styles/' + UID).set({
         nameStyle: document.getElementById("nameStyle").value,
         origin: document.getElementById("originStyle").value,
         baseStyle: document.getElementById("baseStyle").value,
-        father: document.getElementById("fatherStyle").value
-
+        father: document.getElementById("fatherStyle").value,
+        influences: JSON && JSON.parse(json2) || $.parseJSON(json2),
+        influencesTo: JSON && JSON.parse(json1) || $.parseJSON(json1)
     });
     initStylePage();
+}
+
+function add_influences() {
+    if (document.getElementById("name_Style").value == "") {
+        alert("Nombre en blanco.");
+        return null;
+    }
+    document.getElementById('add_style').style.display = 'none';
+
+    var temp = "";
+    var color = "blue";
+    if (styleType == 0) {
+        temp = "Influencias";
+        color = "blue";
+        influences_List += '"' + influences_counter + '": {"name": "' + document.getElementById("name_Style").value + '"},';
+        influences_counter += 1;
+    } else {
+        temp = "Influye";
+        color = "orange";
+        influencesTo_List += '"' + influencesTo_counter + '": {"name": "' + document.getElementById("name_Style").value + '"},';
+        influencesTo_counter += 1;
+    }
+    var newHTML = '<li class="w3-hover-' + color + '">' + document.getElementById("name_Style").value + " - " + temp + '</li>';
+    document.getElementById("added_Styles").insertAdjacentHTML('beforeEnd', newHTML);
+    document.getElementById("name_Style").value = "";
+
+}
+
+/* SOPORTES._______________________________________________________________________________________________________________________________ */
+var locationSupport = "";
+var recordSupport = "";
+var producersSupport = "";
+
+function initSupportPage() {
+    producersSupport = "";
+    refreshSupports();
+    refreshProducers_Support();
+    removeDivs('producers_Selected');
+    document.getElementById('producer-available').style.display = 'block';
+    document.getElementById("nameSupport").value = "";
+}
+
+
+function refreshSupports() {
+    removeDivs('table_supports');
+    // Render
+    return firebase.database().ref('/supports').once('value').then(function (snapshot) {
+        // FOR_EACH
+        snapshot.forEach(function (data) {
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr id='supportsData" + data.key + "' class='w3-light-gray w3-center'>";
+            newRow += "<th>Ubicación: " + data.val().location + "</th>";
+            newRow += "<th>Grabación: " + data.val().record + "</th>";
+            if (data.val().record == "Comercial") {
+                firebase.database().ref('/producers/' + data.val().producer).once('value').then(function (m) {
+                    var newRow1 = "<th>Productora: " + m.val().name + "</th>";
+                    addHtml("supportsData" + data.key, newRow1);
+                });
+            }
+            newRow += "</tr></table></div>";
+            addHtml('table_supports', newRow);
+        });
+    });
+}
+
+function refreshProducers_Support() {
+    removeDivs('producers_Available');
+    return firebase.database().ref('/producers').once('value').then(function (snapshot) {
+        // FOR_EACH
+        snapshot.forEach(function (data) {
+            // REAL_CAPTURE
+            var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().name + '<span onclick="add_SelectedProducer(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
+            addHtml('producers_Available', newHTML);
+            // END REAL_CAPTURE
+        });
+        // END FOR_EACH
+    });
+}
+
+function add_SelectedProducer(o) {
+    document.getElementById('producer-available').style.display = 'none';
+    o.parentElement.style.display = 'none';
+    producersSupport = o.parentElement.getAttribute("id");
+    var newHTML = '<li id="' + o.parentElement.getAttribute("id") + '"class="w3-display-container w3-hover-black">' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '</li>';
+    addHtml('producers_Selected', newHTML);
+}
+
+function addSupport() {
+    if (document.getElementById("nameSupport").value == "") {
+        alert("Nombre en blanco.");
+        return null;
+    }
+    if (locationSupport == "") {
+        alert("La ubicación es requerida.");
+        return null;
+    }
+    if (recordSupport == "") {
+        alert("El tipo de grabación es requerido.");
+        return null;
+    }
+    if (recordSupport == "Comercial" && producersSupport == "") {
+        alert("La productora es requerida.");
+        return null;
+    }
+    // GENERATE A UNIQUE ID BY DATE
+    var fecha = new Date();
+    var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+    json = "{ }";
+
+    // TRANSACCION PRINCIPAL
+    var name = document.getElementById("nameSupport").value;
+    if (recordSupport == "Propia") {
+        firebase.database().ref('supports/' + UID).set({
+            name: name,
+            location: locationSupport,
+            record: recordSupport,
+            songs: JSON && JSON.parse(json) || $.parseJSON(json)
+        });
+    } else {
+        firebase.database().ref('supports/' + UID).set({
+            name: name,
+            producer: producersSupport,
+            location: locationSupport,
+            record: recordSupport,
+            songs: JSON && JSON.parse(json) || $.parseJSON(json)
+        });
+    }
+    initSupportPage();
 }
