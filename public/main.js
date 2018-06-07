@@ -431,7 +431,23 @@ function initSongPage() {
     songSupport_List = "";
     songSupport_counter = 0;
     document.getElementById("nameAuthor").value = "";
+    document.getElementById("nameSong").value = "";
+
+    var div = document.getElementById('added_authorLyrics');
+    while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
+    var div = document.getElementById('songSupports_Selected');
+    while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
+    var div = document.getElementById('songPerformers_Selected');
+    while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
     refreshSongPerformers();
+    refreshSongs();
+    refreshSongSupports();
 }
 
 function addSong() {
@@ -464,27 +480,84 @@ function addSong() {
 
     // RESETEO DE VARIABLES Y CAMPOS
     initSongPage();
-    var div = document.getElementById('songPerformers_Selected');
-    while (div.hasChildNodes()) {
-        div.removeChild(div.lastChild);
-    }
 }
 
 function refreshSongs() {
+    var div = document.getElementById('table_songs');
+    while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
+
     return firebase.database().ref('/songs').once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
-            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "</h4>";
-            newRow += "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>Autores</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-dark-grey w3-hover-grey'>" + data.val().name + "</h4>";
+            // Autores Letras
+            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Autores Letras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr class='w3-light-gray w3-center'>";
-            for(i = 0; i < Object.keys(data.val().authorLyrics.val()).length; i++){}
-            newRow += "<th>" + data.val().authorLyrics.val() + "</th>";
-            newRow += "<th>" + data.val().rating + "</th>";
-            newRow += "</tr></table></div>";
-            document.getElementById("table_producers").insertAdjacentHTML('beforeEnd', newRow);
+            for (i = 0; i < Object.keys(data.val().authorLyrics).length; i++) {
+                newRow += "<th>" + data.val().authorLyrics[i].name + "</th>";
+            }
+            newRow += "</tr></table>";
+            // Autores Musica
+            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Autores Música</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr class='w3-light-gray w3-center'>";
+            for (i = 0; i < Object.keys(data.val().authorMusic).length; i++) {
+                newRow += "<th>" + data.val().authorMusic[i].name + "</th>";
+            }
+            newRow += "</tr></table>";
+            // Interpretes
+            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Interpretes</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr id='songPerformers_list" + data.key + "' class='w3-light-gray w3-center'>";
+            for (i = 0; i < Object.keys(data.val().performers).length; i++) {
+                firebase.database().ref('/performers/' + data.val().performers[i].id).once('value').then(function (m) {
+                    console.log(m.val().name);
+                    var newRow1 = "<th>" + m.val().name + "</th>";
+
+                    document.getElementById("songPerformers_list" + data.key).insertAdjacentHTML('beforeEnd', newRow1);
+                });
+            }
+            newRow += "</tr></table>";
+            // Soporte
+            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Soportes</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr id='songSupports_list' class='w3-light-gray w3-center'>";
+            // for (i = 0; i < Object.keys(data.val().performers).length; i++) {
+            //     firebase.database().ref('/performers/' + data.val().performers[i].id).once('value').then(function (m) {
+            //         console.log(m.val().name);
+            //         var newRow1 = "<th>" + m.val().name + "</th>";
+
+            //         document.getElementById("songPerformers_list").insertAdjacentHTML('beforeEnd', newRow1);
+            //     });
+            // }
+            newRow += "</tr></table>";
+            // Partituras
+            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Partituras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr id='songPartituras_list' class='w3-light-gray w3-center'>";
+            // for (i = 0; i < Object.keys(data.val().performers).length; i++) {
+            //     firebase.database().ref('/performers/' + data.val().performers[i].id).once('value').then(function (m) {
+            //         console.log(m.val().name);
+            //         var newRow1 = "<th>" + m.val().name + "</th>";
+
+            //         document.getElementById("songPerformers_list").insertAdjacentHTML('beforeEnd', newRow1);
+            //     });
+            // }
+            newRow += "</tr></table>";
+            // Letras
+            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Letras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr id='songLetras_list' class='w3-light-gray w3-center'>";
+            // for (i = 0; i < Object.keys(data.val().performers).length; i++) {
+            //     firebase.database().ref('/performers/' + data.val().performers[i].id).once('value').then(function (m) {
+            //         console.log(m.val().name);
+            //         var newRow1 = "<th>" + m.val().name + "</th>";
+
+            //         document.getElementById("songPerformers_list").insertAdjacentHTML('beforeEnd', newRow1);
+            //     });
+            // }
+            newRow += "</tr></table>";
+            newRow += "</div>";
+            document.getElementById("table_songs").insertAdjacentHTML('beforeEnd', newRow);
         });
     });
-
 }
 
 
