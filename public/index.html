@@ -4,13 +4,14 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>MCollections</title>
+  <title>Waves Collection</title>
   <link rel="shortcut icon" href="CD.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
 
   <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
@@ -19,34 +20,71 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 
-<body>
+<body id="myPage">
+
+  <!-- Sidebar on click -->
+  <nav class="w3-sidebar w3-bar-block w3-white w3-card w3-animate-left w3-xxlarge" style="display:none;z-index:2" id="mySidebar">
+    <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-display-topright w3-text-teal">Close
+      <i class="fa fa-remove"></i>
+    </a>
+    <a class="w3-bar-item w3-button" onclick=" hideAll('performers'); initPerformerPage()">Interpretes</a>
+    <a class="w3-bar-item w3-button" onclick=" hideAll('styles'); initStylePage()">Estilos</a>
+    <a class="w3-bar-item w3-button" onclick=" hideAll('texts'); initTextPage()">Textos</a>
+    <a class="w3-bar-item w3-button" onclick=" hideAll('songs'); initSongPage()">Canciones</a>
+    <a class="w3-bar-item w3-button" onclick=" hideAll('supports'); initSupportPage()">Soportes</a>
+    <a class="w3-bar-item w3-button" onclick=" hideAll('producers'); initProducerPage()">Productoras</a>
+
+  </nav>
+
   <!-- Navbar -->
   <div class="w3-top">
-    <div class="w3-bar w3-black w3-card">
-      <a href="#" class="w3-bar-item w3-button w3-padding-large">
-        <i class="fa fa-angle-up" style=" caret-color: auto; font-size:25px;"></i>
+    <div class="w3-bar w3-theme-d2 w3-left-align">
+      <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-hover-white w3-theme-d2" href="javascript:void(0);"
+        onclick="openNav()">
+        <i class="fa fa-bars"></i>
       </a>
-      <div class="w3-dropdown-hover w3-hide-small">
-        <button class="w3-padding-large w3-button" title="More">Acerca de...
-          <i class="fa fa-caret-down"></i>
-        </button>
-        <div class="w3-dropdown-content w3-bar-block w3-card-4">
-          <a class="w3-bar-item w3-button" onclick=" hideAll('performers'); initPerformerPage()">Interpretes</a>
-          <a class="w3-bar-item w3-button" onclick=" hideAll('styles'); initStylePage()">Estilos</a>
-          <a class="w3-bar-item w3-button">Textos</a>
-          <a class="w3-bar-item w3-button" onclick=" hideAll('songs'); initSongPage()">Canciones</a>
-          <a class="w3-bar-item w3-button" onclick=" hideAll('supports'); initSupportPage()">Soportes</a>
-          <a class="w3-bar-item w3-button" onclick=" hideAll('producers'); initProducerPage()">Productoras</a>
-        </div>
-      </div>
+      <a href="#" class="w3-bar-item w3-button w3-white" onclick=" hideAll('home'); ">
+        <i class="fa fa-home w3-margin-right"></i>Waves-C</a>
+
+
+      <a class="w3-bar-item w3-button w3-hide-small w3-hover-white" onclick=" hideAll('performers'); initPerformerPage()">Interpretes</a>
+      <a class="w3-bar-item w3-button w3-hide-small w3-hover-white" onclick=" hideAll('styles'); initStylePage()">Estilos</a>
+      <a class="w3-bar-item w3-button w3-hide-small w3-hover-white" onclick=" hideAll('texts'); initTextPage()">Textos</a>
+      <a class="w3-bar-item w3-button w3-hide-small w3-hover-white" onclick=" hideAll('songs'); initSongPage()">Canciones</a>
+      <a class="w3-bar-item w3-button w3-hide-small w3-hover-white" onclick=" hideAll('supports'); initSupportPage()">Soportes</a>
+      <a class="w3-bar-item w3-button w3-hide-small w3-hover-white" onclick=" hideAll('producers'); initProducerPage()">Productoras</a>
+
+    </div>
+
+    <!-- Navbar on small screens -->
+    <div id="navDemo" class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium">
+      <a class="w3-bar-item w3-button" onclick=" hideAll('performers'); initPerformerPage()">Interpretes</a>
+      <a class="w3-bar-item w3-button" onclick=" hideAll('styles'); initStylePage()">Estilos</a>
+      <a class="w3-bar-item w3-button" onclick=" hideAll('texts'); initTextPage()">Textos</a>
+      <a class="w3-bar-item w3-button" onclick=" hideAll('songs'); initSongPage()">Canciones</a>
+      <a class="w3-bar-item w3-button" onclick=" hideAll('supports'); initSupportPage()">Soportes</a>
+      <a class="w3-bar-item w3-button" onclick=" hideAll('producers'); initProducerPage()">Productoras</a>
     </div>
   </div>
 
+
+
   <!-- Page content -->
-  <div class="w3-content" style=" caret-color: auto; max-width:2000px;margin-top:46px">
+  <div id+ "page" class="w3-content " style=" caret-color: auto; max-width:2000px;margin-top:46px">
+
+    <!-- HOME._________________________________________________________________________________________________________-->
+    <div class="w3-display-container  w3-animate-opacity w3-text-white" style="margin-top: 10pc; display:block; font-family: 'Lobster', serif;" id="home">
+      <div class="w3-jumbo w3-animate-center w3-padding w3-display-middle" style="font-family: 'Lobster', serif;">
+        <p class="w3-jumbo w3-animate-center wellcome" style="font-family: 'Lobster', serif;">Waves</p>
+        <p class="w3-jumbo w3-animate-center wellcome" style="font-family: 'Lobster', serif;">Collection</p>
+      </div>
+      <!-- Image Header -->
+      <img src="soundwavetweaks.png" alt="boat" style="width:100%;min-height:350px;max-height:600px;">
+    </div>
 
     <!-- MI COLECCION_____________________________________________________________________________________________________________________________  -->
-    <div style=" caret-color: auto; display:none" class="back-full w3-container w3-center w3-padding-64" style=" caret-color: auto; max-width:800px" id="collections">
+    <div style=" caret-color: auto; display:none" class="back-full w3-container w3-center w3-padding-64" style=" caret-color: auto; max-width:800px"
+      id="collections">
 
       <!-- TITLE. -->
       <h2 class="w3-wide ">Mi Colección</h2>
@@ -515,7 +553,8 @@
     </div>
 
     <!-- SOPORTES_____________________________________________________________________________________________________________________________  -->
-    <div style=" caret-color: auto; display:none" class="w3-container w3-center w3-padding-64" style=" caret-color: auto; max-width:800px" id="supports">
+    <div style=" caret-color: auto; display:none" class="w3-container w3-center w3-padding-64" style=" caret-color: auto; max-width:800px"
+      id="supports">
 
       <!-- TITLE. -->
       <h2 class="w3-wide">Soportes</h2>
@@ -616,12 +655,141 @@
       <!-- END SOPORTES -->
     </div>
 
-    <!-- FOOTER. -->
-    <footer class="w3-container w3-center">
-      <p>Copyright (C) 2018 X-Men Arts. </p>
-    </footer>
+    <!-- Textos. _____________________________________________________________________________________________________________________________  -->
+    <div class="w3-container w3-center w3-padding-64" style="display:none;" id="texts">
 
-    <script src="main.js"></script>
+      <!-- TITLE. -->
+      <h2 class="w3-wide">Textos</h2>
+      <p class="w3-opacity">
+        <i>... Llenando el cielo de estrellas.</i>
+      </p>
+      <!-- END TITLE. -->
+
+      <!-- TEXTS.-->
+      <div id="producers-list w3-responsive">
+        <!-- Grupos Lista. -->
+        <div class="w3-section w3-card">
+          <h3 class="w3-hover-sand w3-black" style="cursor:pointer;" onclick="(function() {
+            if(document.getElementById('tabla_texts').style.display == 'none'){
+              document.getElementById('tabla_texts').style.display = 'block';
+            } else {
+              document.getElementById('tabla_texts').style.display = 'none';
+            }})()">Textos</h3>
+          <div id="tabla_texts" style="display:none;">
+          </div>
+        </div>
+
+      </div>
+      <!-- END TEXTS. -->
+
+      <!-- AGREGAR -->
+      <div class="w3-card w3-padding-0 color-whitesmoke">
+
+        <div class="w3-center w3-padding-64">
+          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+        </div>
+
+        <div class="w3-section ">
+          <h3>Tipo</h3>
+          <form>
+            <label class="radio-inline w3-padding-small">
+              <input onclick="elementTextjs = 'Partitura'; document.getElementById('add_Partiture').style.display = 'block'; document.getElementById('add_Lyric').style.display = 'none';"
+                type="radio" name="optradio">Partitura
+            </label>
+            <label class="radio-inline w3-padding-small">
+              <input onclick="elementTextjs = 'Letra'; document.getElementById('add_Partiture').style.display = 'none'; document.getElementById('add_Lyric').style.display = 'block';"
+                type="radio" name="optradio">Letra
+            </label>
+          </form>
+        </div>
+
+        <div id="add_Partiture" style=" caret-color: auto; display:none" class="w3-section w3-card">
+
+          <div class="w3-center w3-padding-64">
+            <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar Partitura</span>
+          </div>
+
+          <div class="w3-section ">
+            <h3>Tipo</h3>
+            <form>
+              <label class="radio-inline w3-padding-small">
+                <input onclick="typeTextjs = 'Propia'; document.getElementById('add-text').style.display = 'block';" type="radio" name="optradio">Propia
+              </label>
+              <label class="radio-inline w3-padding-small">
+                <input onclick="typeTextjs = 'Comercial'; document.getElementById('add-text').style.display = 'none';" type="radio" name="optradio">Comercial
+              </label>
+            </form>
+          </div>
+
+          <div style=" caret-color: auto; display:none" id="add-text" class="w3-section ">
+            <h3>Precio</h3>
+            <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="priceText">
+            <h3>Origen</h3>
+            <input class="w3-input w3-border w3-hover-border-black" style="width:100%;" type="text" id="originText">
+          </div>
+        </div>
+
+        <!-- ADD PARTITURE. -->
+        <div id="add_Lyric" style=" caret-color: auto; display:none" class="w3-section w3-card">
+
+          <div class="w3-center w3-padding-64">
+            <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar Letra</span>
+          </div>
+
+          <div class="w3-section ">
+            <h3>Tipo</h3>
+            <form>
+              <label class="radio-inline w3-padding-small">
+                <input onclick="typeLyricjs = 'Propia';" type="radio" name="optradio">Propia
+              </label>
+              <label class="radio-inline w3-padding-small">
+                <input onclick="typeLyricjs = 'Obtenida';" type="radio" name="optradio">Obtenida
+              </label>
+            </form>
+          </div>
+
+          <div style=" caret-color: auto; display:block" id="origialSong-available" class="w3-section ">
+            <h3>Canción Original</h3>
+            <div class="w3-section ">
+              <ul id="OriginalSong_Available" class="w3-ul "> </ul>
+            </div>
+          </div>
+
+          <!-- LISTA SELECCIONADA. -->
+          <h3>Canción Seleccionada</h3>
+          <div class="w3-section ">
+            <ul id="OriginalSong_Selected" class="w3-ul "> </ul>
+          </div>
+          <!-- END AGREGAR-->
+        </div>
+
+
+        <!-- Cancion seleccionado. -->
+        <h3>Otras Canciones</h3>
+        <div class="w3-section ">
+          <ul id="songTexts_available" class="w3-ul "> </ul>
+        </div>
+
+        <!-- LISTA SELECCIONADA. -->
+        <h3>Canciones Seleccionadas</h3>
+        <div class="w3-section ">
+          <ul id="songTexts_Selected" class="w3-ul "> </ul>
+        </div>
+
+
+        <!-- HECHO. -->
+        <label type="submit" class="w3-button w3-block w3-black" onclick="addMusicSheet()">Hecho</label>
+
+        <!-- END TEXTOS-->
+      </div>
+
+
+      <!-- FOOTER. -->
+      <footer class="w3-container w3-center">
+        <p>Copyright (C) 2018 X-Men Arts. </p>
+      </footer>
+
+      <script src="main.js"></script>
 </body>
 
 </html>

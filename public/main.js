@@ -9,11 +9,36 @@ var config = {
 };
 firebase.initializeApp(config);
 
+// Script for side navigation
+function w3_open() {
+    var x = document.getElementById("mySidebar");
+    x.style.width = "300px";
+    x.style.paddingTop = "10%";
+    x.style.display = "block";
+}
+
+// Close side navigation
+function w3_close() {
+    document.getElementById("mySidebar").style.display = "none";
+}
+
+// Used to toggle the menu on smaller screens when clicking on the menu button
+function openNav() {
+    var x = document.getElementById("navDemo");
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+    } else { 
+        x.className = x.className.replace(" w3-show", "");
+    }
+}
+
 function hideAll(id) {
     console.log(id);
+    document.getElementById("home").style.display = "none";
     document.getElementById("performers").style.display = "none";
     document.getElementById("producers").style.display = "none";
     document.getElementById("songs").style.display = "none";
+    document.getElementById("texts").style.display = "none";
     document.getElementById("styles").style.display = "none";
     document.getElementById("supports").style.display = "none";
     document.getElementById(id).style.display = "block";
@@ -148,8 +173,8 @@ function refresh_tablePerformers() {
                 newRow = "";
                 // SINGLE 
                 if (intern.val().type == "single") {
-                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
-                    newRow += "<tr class='w3-light-gray w3-center'>";
+                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table class='w3-table w3-centered   w3-animate-opacity'>";
+                    newRow += "<tr class=' w3-center'>";
                     if (intern.val().vocalist == true) {
                         newRow += "<th>Vocalista</th>";
                     }
@@ -714,14 +739,6 @@ function add_SelectedSong_Support(o) {
     addHtml('songSupports_Selected', newHTML);
 }
 
-function add_SelectedSongSupport(o) {
-    o.parentElement.style.display = 'none';
-    var newNode = '"id"' + ': "' + o.parentElement.getAttribute("id") + '"';
-    songSupport_List += songSupport_counter + ': {' + newNode + "},";
-    songSupport_counter += 1;
-    var newHTML = '<li id="' + o.parentElement.getAttribute("id") + '"class="w3-display-container w3-hover-black">' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '</li>';
-    addHtml('songSupports_Selected', newHTML);
-}
 
 /* ESTILOS._______________________________________________________________________________________________________________________________ */
 
@@ -821,7 +838,9 @@ function add_influences() {
 
 }
 
+
 /* SOPORTES._______________________________________________________________________________________________________________________________ */
+
 var locationSupport = "";
 var recordSupport = "";
 var producersSupport = "";
@@ -921,4 +940,215 @@ function addSupport() {
         });
     }
     initSupportPage();
+}
+
+
+/* TEXTOS._______________________________________________________________________________________________________________________________ */
+
+var songLyric_List = "";
+var songLyric_counter = 0;
+var songText_List = "";
+var songText_counter = 0;
+var typeTextjs = "";
+var elementTextjs = "";
+var typeLyricjs = "";
+function initTextPage() {
+    songLyric_List = "";
+    songLyric_counter = 0;
+    songText_List = "";
+    songText_counter = 0;
+    document.getElementById("priceText").value = "";
+    refreshTexts();
+    refreshSongTexts();
+    removeDivs('songTexts_available');
+    removeDivs('songTexts_Selected');
+    removeDivs('OriginalSong_Available');
+    document.getElementById('origialSong-available').style.display = 'block';
+    removeDivs('OriginalSong_Selected');
+    document.getElementById("priceText").value = "";
+    document.getElementById("originText").value = "";
+}
+
+function refreshTexts() {
+    // Render
+    return firebase.database().ref('/texts').once('value').then(function (snapshot) {
+        // FOR_EACH
+        snapshot.forEach(function (data) {
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().element + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            newRow += "<tr id='textData" + data.key + "' class='w3-light-gray w3-center w3-centered '>";
+            newRow += "<th>Tipo: " + data.val().type + "</th>";
+            if (data.val().element == "Partitura") {
+                if (data.val().type == "Propia") {
+                    newRow += "<th>Origen: " + data.val().origin + "</th>";
+                    newRow += "<th>Precio: " + data.val().price + "</th>";
+                }
+            } else {
+                firebase.database().ref('/songs/' + data.val().originalSong).once('value').then(function (m) {
+                    var newRow1 = "<th>Canción Original: " + m.val().name + "</th>";
+                    addHtml("textData" + data.key, newRow1);
+                });
+            }
+            newRow += "</tr><tr id='songsRow" + data.key + "' class='w3-center w3-centered '><th>Otras Canciones</th></tr></table></div>";
+            addHtml('tabla_texts', newRow);
+            try {
+                for (i = 0; i < Object.keys(data.val().songs).length; i++) {
+                    firebase.database().ref('/songs/' + data.val().songs[i].id).once('value').then(function (m) {
+                        var newRow1 = "<th>" + m.val().name + "</th>";
+                        document.getElementById('songsRow' + data.key).insertAdjacentHTML('afterEnd', newRow1);
+                    });
+                }
+            } catch (error) {
+                var newRow1 = "<th>Ninguna</th>";
+                document.getElementById('songsRow' + data.key).insertAdjacentHTML('afterEnd', newRow1);
+            }
+        });
+    });
+}
+
+function refreshSongTexts() {
+    removeDivs('songTexts_available');
+    removeDivs('OriginalSong_Available');
+    return firebase.database().ref('/songs').once('value').then(function (snapshot) {
+        // FOR_EACH
+        snapshot.forEach(function (data) {
+            // REAL_CAPTURE
+            var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().name + '<span onclick="add_SelectedSong_Text(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
+            addHtml('songTexts_available', newHTML);
+            var newHTML = '<li id="' + data.key + '"class="w3-display-container w3-hover-black">' + data.val().name + '<span onclick="add_SelectedSong_Lyric(this)" class="w3-button w3-transparent w3-display-right">&dArr;</span></li>';
+            addHtml('OriginalSong_Available', newHTML);
+            // END REAL_CAPTURE
+        });
+        // END FOR_EACH
+    });
+
+}
+
+function add_SelectedSong_Text(o) {
+    o.parentElement.style.display = 'none';
+    songText_List += '"' + songText_counter + '":{"id" :"' + o.parentElement.getAttribute("id") + '"},';
+    songText_counter += 1;
+    var newHTML = '<li id="' + o.parentElement.getAttribute("id") + '"class="w3-display-container w3-hover-black">' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '</li>';
+    addHtml('songTexts_Selected', newHTML);
+}
+
+function add_SelectedSong_Lyric(o) {
+    document.getElementById('origialSong-available').style.display = 'none';
+    songLyric_List += o.parentElement.getAttribute("id");
+    songLyric_counter += 1;
+    var newHTML = '<li id="' + o.parentElement.getAttribute("id") + '"class="w3-display-container w3-hover-black">' + o.parentElement.textContent.substring(0, o.parentElement.textContent.length - 1) + '</li>';
+    addHtml('OriginalSong_Selected', newHTML);
+}
+
+function addMusicSheet() {
+    if (elementTextjs == "") {
+        alert("Debe seleccionar un Tipo de texto.");
+        return null;
+    } else if (elementTextjs == "Partitura") {
+        if (songText_counter == 0) {
+            alert("Debe seleccionar una canción.");
+            return null;
+        }
+
+        if (typeTextjs == "Propia") {
+            if (document.getElementById("priceText").value == "") {
+                alert("Precio en blanco.");
+                return null;
+            }
+            if (document.getElementById("originText").value == "") {
+                alert("Origen en blanco.");
+                return null;
+            }
+            // GENERATE A UNIQUE ID BY DATE
+            var fecha = new Date();
+            var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+
+            var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
+
+            // TRANSACCION PRINCIPAL
+            firebase.database().ref('texts/' + UID).set({
+                element: elementTextjs,
+                type: typeTextjs,
+                origin: document.getElementById("priceText").value,
+                price: document.getElementById("originText").value,
+                songs: JSON && JSON.parse(json1) || $.parseJSON(json1)
+            });
+            addText_SongList(json1, UID);
+
+        } else if (typeTextjs == "Comercial") {
+            // GENERATE A UNIQUE ID BY DATE
+            var fecha = new Date();
+            var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+
+            var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
+
+            // TRANSACCION PRINCIPAL
+            firebase.database().ref('texts/' + UID).set({
+                element: elementTextjs,
+                type: typeTextjs,
+                songs: JSON && JSON.parse(json1) || $.parseJSON(json1)
+            });
+            addText_SongList(json1, UID);
+
+        } else {
+            alert("Seleccione un tipo de Partitura");
+            return null;
+        }
+    } else if (elementTextjs == "Letra") {
+        if (songLyric_counter == 0) {
+            alert("Debe seleccionar una canción Original.");
+            return null;
+        }
+
+        if (typeLyricjs == "Propia") {
+
+            // GENERATE A UNIQUE ID BY DATE
+            var fecha = new Date();
+            var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+
+            var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
+            alert(json1);
+            // TRANSACCION PRINCIPAL
+            firebase.database().ref('texts/' + UID).set({
+                element: elementTextjs,
+                type: typeLyricjs,
+                originalSong: songLyric_List,
+                songs: JSON && JSON.parse(json1) || $.parseJSON(json1)
+            });
+            addText_SongList(json1, UID);
+
+        } else if (typeLyricjs == "Obtenida") {
+            // GENERATE A UNIQUE ID BY DATE
+            var fecha = new Date();
+            var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+
+            var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
+
+            // TRANSACCION PRINCIPAL
+            firebase.database().ref('texts/' + UID).set({
+                element: elementTextjs,
+                originalSong: songLyric_List,
+                type: typeLyricjs,
+                songs: JSON && JSON.parse(json1) || $.parseJSON(json1)
+            });
+            addText_SongList(json1, UID);
+
+        } else {
+            alert("Seleccione un tipo de Letra");
+            return null;
+        }
+    }
+    initTextPage();
+}
+
+function addText_SongList(json, UID) {
+    alert(json);
+    var jsonTexts = JSON && JSON.parse(json) || $.parseJSON(json);
+    var jsonFinal = "";
+
+    for (i = 0; i < Object.keys(jsonTexts).length; i++) {
+        jsonFinal += '"' + i + '": {"id":"' + UID + '"}';
+    
+    jsonFinal = "{" + jsonFinal + "}";
+
+    firebase.database().ref('songs/' + jsonTexts[i].id + "/texts").update(JSON && JSON.parse(jsonFinal) || $.parseJSON(jsonFinal), );}
 }

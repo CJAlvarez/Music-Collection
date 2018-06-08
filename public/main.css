@@ -14,7 +14,23 @@ h3{
 body{
     background-image: url("wall.png");
     background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100%;
 }
 h1, h2, h3, h4, h5, label, button, i, option, p,th, tr, div{
     caret-color: auto;
+}
+
+
+.wellcome {
+    color: rgb(36, 34, 34);
+    font-style: italic;
+    text-align: center;
+    text-shadow: 10%;
+}
+.wellcome:hover {
+    transition: 0.3s;
+    opacity: 0.6;
 }
