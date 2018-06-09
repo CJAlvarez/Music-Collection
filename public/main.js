@@ -105,7 +105,7 @@ function addCollection() {
     json = "{" + recordList.substring(0, recordList.lastIndexOf(",")) + "}";
     alert(json);
 
-    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+    /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
     var title = document.getElementById("title-collection").value;
     firebase.database().ref('collections/' + UID).set({
         title: title,
@@ -278,7 +278,7 @@ function addPerformer(i) {
             alert("Nombre en blanco.");
             return null;
         }
-        /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+        /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
         firebase.database().ref('performers/' + UID).set({
             name: name,
             type: "single",
@@ -303,7 +303,7 @@ function addPerformer(i) {
         var newMembers = "{" + memberList_groupPerformer.substring(0, memberList_groupPerformer.lastIndexOf(",")) + "}";
 
         //console.log(newMembers);
-        /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+        /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
         firebase.database().ref('performers/' + UID).set({
             type: "group",
             name: name,
@@ -330,7 +330,7 @@ function addPerformer(i) {
             return null;
         }
 
-        /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+        /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
         firebase.database().ref('performers/' + UID).set({
             type: "orchestra",
             name: name,
@@ -414,7 +414,7 @@ function addProducer() {
     var fecha = new Date();
     var UID = setUID();
 
-    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+    /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
     firebase.database().ref('producers/' + UID).set({
         name: document.getElementById("nameProducer").value,
         location: document.getElementById("locationProducer").value,
@@ -505,7 +505,7 @@ function addSong() {
     var json3 = "{" + authorMusic_List.substring(0, authorMusic_List.lastIndexOf(",")) + "}";
     var json4 = "{" + songStyle_List.substring(0, songStyle_List.lastIndexOf(",")) + "}";
 
-    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+    /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
     var name = document.getElementById("nameSong").value;
     for (i = 0; i < document.getElementById("styleBase").childElementCount; i++) {
         if (document.getElementById("styleBase").children[i].value == document.getElementById("styleBase").value) {
@@ -819,7 +819,7 @@ function addStyles() {
     var json2 = "{" + influences_List.substring(0, influences_List.lastIndexOf(",")) + "}";
     var json1 = "{" + influencesTo_List.substring(0, influencesTo_List.lastIndexOf(",")) + "}";
 
-    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+    /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
     firebase.database().ref('styles/' + UID).set({
         nameStyle: document.getElementById("nameStyle").value,
         origin: document.getElementById("originStyle").value,
@@ -942,7 +942,7 @@ function addSupport() {
     var UID = setUID();
     json = "{ }";
 
-    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+    /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
     var name = document.getElementById("nameSupport").value;
     if (recordSupport == "Propia") {
         firebase.database().ref('supports/' + UID).set({
@@ -990,6 +990,7 @@ function initTextPage() {
     removeDivs('OriginalSong_Selected');
     document.getElementById("priceText").value = "";
     document.getElementById("originText").value = "";
+    document.getElementById('show_text').textContent = "";
 }
 
 function refreshTexts() {
@@ -1013,7 +1014,8 @@ function refreshTexts() {
                     addHtml("textData" + data.key, newRow1);
                 });
             }
-            newRow += "</tr><tr id='songsRow" + data.key + "' class='w3-center w3-centered '><th>Otras Canciones</th></tr></table></div>";
+            newRow += "</tr><tr class='w3-center w3-centered ' ><th onclick=\"getTC('" + data.key + "');document.getElementById('modal_text').style.display='block';\" class=\"w3-button w3-hover-orange w3-transparent\">Contenido</th></tr>";
+            newRow += "<tr id='songsRow" + data.key + "' class='w3-center w3-centered '><th>Otras Canciones</th></tr></table></div>";
             addHtml('tabla_texts', newRow);
             try {
                 for (i = 0; i < Object.keys(data.val().songs).length; i++) {
@@ -1025,6 +1027,17 @@ function refreshTexts() {
             } catch (error) {
                 var newRow1 = "<th>Ninguna</th>";
                 document.getElementById('songsRow' + data.key).insertAdjacentHTML('afterEnd', newRow1);
+            }
+        });
+    });
+}
+
+function getTC(k) {
+    firebase.database().ref('/texts').orderByKey().once('value').then(function (snapshot) {
+        // FOR_EACH
+        snapshot.forEach(function (data) {
+            if (data.key == k) {
+                document.getElementById('show_text').textContent =  data.val().textContent;
             }
         });
     });
@@ -1064,6 +1077,7 @@ function add_SelectedSong_Lyric(o) {
 }
 
 function addMusicSheet() {
+    console.log(document.getElementById("comment").value);
     if (elementTextjs == "") {
         alert("Debe seleccionar un Tipo de texto.");
         return null;
@@ -1088,9 +1102,10 @@ function addMusicSheet() {
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
 
-            /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+            /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
             firebase.database().ref('texts/' + UID).set({
                 element: elementTextjs,
+                textContent: document.getElementById("comment").value,
                 type: typeTextjs,
                 origin: document.getElementById("priceText").value,
                 price: document.getElementById("originText").value,
@@ -1105,9 +1120,10 @@ function addMusicSheet() {
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
 
-            /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+            /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
             firebase.database().ref('texts/' + UID).set({
                 element: elementTextjs,
+                textContent: document.getElementById("comment").value,
                 type: typeTextjs,
                 songs: JSON && JSON.parse(json1) || $.parseJSON(json1)
             });
@@ -1130,11 +1146,11 @@ function addMusicSheet() {
             var UID = setUID();
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
-            alert(json1);
-            /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+            /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
             firebase.database().ref('texts/' + UID).set({
                 element: elementTextjs,
                 type: typeLyricjs,
+                textContent: document.getElementById("comment").value,
                 originalSong: songLyric_List,
                 songs: JSON && JSON.parse(json1) || $.parseJSON(json1)
             });
@@ -1147,9 +1163,10 @@ function addMusicSheet() {
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
 
-            /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
+            /* TRANSACCION PRINCIPAL*/  if (globalOption == 0) { document.getElementById('modal_Add').style.display = 'block'; }
             firebase.database().ref('texts/' + UID).set({
                 element: elementTextjs,
+                textContent: document.getElementById("comment").value,
                 originalSong: songLyric_List,
                 type: typeLyricjs,
                 songs: JSON && JSON.parse(json1) || $.parseJSON(json1)
@@ -1276,6 +1293,6 @@ function toModify(op, id) {
     }
 }
 
-if(globalOption != 0){
-    document.getElementById('modal_Add').style.display = 'block';    
+if (globalOption != 0) {
+    document.getElementById('modal_Add').style.display = 'block';
 }

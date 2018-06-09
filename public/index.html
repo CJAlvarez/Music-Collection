@@ -114,7 +114,18 @@
     </footer>
   </div>
 </div>
-
+<div style="display:none;" id="modal_text" class="w3-modal w3-animate-opacity">
+  <div class="w3-modal-content w3-card-4">
+    <header class="w3-container w3-orange">
+      <span onclick="document.getElementById('modal_text').style.display='none'" class="w3-button w3-large w3-display-topright">&times;</span>
+      <h2>Contenido...</h2>
+    </header>
+    <div class="w3-container">
+      <h3 id="show_text"></h3>
+    </div>
+  </div>
+</div>
+<th onclick="document.getElementById('show_text').textContent = data.val().textContent;document.getElementById('modal_text').style.display='block';" class="w3-button w3-hover-orange w3-transparent">Contenido</th>
   <!-- Page content -->
   <div id+ "page" class="w3-content " style=" caret-color: auto; max-width:2000px;margin-top:46px">
 
@@ -810,6 +821,11 @@
           <!-- END AGREGAR-->
         </div>
 
+        <h3>Contenido</h3>
+        <div id="text_Content"class="form-group">
+            <label for="comment">...</label>
+            <textarea class="form-control" rows="5" id="comment"></textarea>
+          </div>
 
         <!-- Cancion seleccionado. -->
         <h3>Otras Canciones</h3>
