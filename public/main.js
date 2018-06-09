@@ -27,7 +27,7 @@ function openNav() {
     var x = document.getElementById("navDemo");
     if (x.className.indexOf("w3-show") == -1) {
         x.className += " w3-show";
-    } else { 
+    } else {
         x.className = x.className.replace(" w3-show", "");
     }
 }
@@ -68,7 +68,7 @@ function refreshRecords() {
     //
     removeDivs('availableRecord_Collection');
 
-    return firebase.database().ref('/records').once('value').then(function (snapshot) {
+    return firebase.database().ref('/records').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
             // REAL_CAPTURE
@@ -101,7 +101,7 @@ function add_SelectedRecord_Collection(o) {
 function addCollection() {
     // GENERATE A UNIQUE ID BY DATE
     var fecha = new Date();
-    var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+    var UID = setUID();
     json = "{" + recordList.substring(0, recordList.lastIndexOf(",")) + "}";
     alert(json);
 
@@ -126,6 +126,8 @@ var vocalist = false;
 var role = -1;
 
 function initPerformerPage() {
+    globalUID = "";
+    globalOption = 0;
     document.getElementById('performerType').children[0].removeAttribute("class");
     document.getElementById('performerType').children[0].setAttribute("class", "w3-hover-blue cursor-pointer w3-blue");
     document.getElementById('performerType').children[1].removeAttribute("class");
@@ -164,16 +166,16 @@ function refresh_tablePerformers() {
     removeDivs('orchestras_tablePerformer');
 
     // Render
-    return firebase.database().ref('/performers').once('value').then(function (snapshot) {
+    return firebase.database().ref('/performers').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
             // REAL_CAPTURE
-            firebase.database().ref('/performers/' + data.key).once('value').then(function (intern) {
+            firebase.database().ref('/performers/' + data.key).orderByKey().once('value').then(function (intern) {
 
                 newRow = "";
                 // SINGLE 
                 if (intern.val().type == "single") {
-                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table class='w3-table w3-centered   w3-animate-opacity'>";
+                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('performer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered   w3-animate-opacity'>";
                     newRow += "<tr class=' w3-center'>";
                     if (intern.val().vocalist == true) {
                         newRow += "<th>Vocalista</th>";
@@ -193,8 +195,8 @@ function refresh_tablePerformers() {
                     // GROUP
                 } else if (intern.val().type == "group") {
 
-                    firebase.database().ref('/performers/' + data.key + "/members").once('value').then(function (mems) {
-                        newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table id='in_group_tablePerformer" + data.key + "' class='w3-table w3-centered w3-animate-opacity'>";
+                    firebase.database().ref('/performers/' + data.key + "/members").orderByKey().once('value').then(function (mems) {
+                        newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('performer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table id='in_group_tablePerformer" + data.key + "' class='w3-table w3-centered w3-animate-opacity'>";
                         addHtml('group_tablePerformer', newRow);
                         mems.forEach(function (m) {
                             newRow = "<tr class=' w3-center'>";
@@ -210,7 +212,7 @@ function refresh_tablePerformers() {
 
                     // ORCHESTRA
                 } else if (intern.val().type == "orchestra") {
-                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "</h4><table class='w3-table w3-centered w3-animate-opacity'>";
+                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('Performer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered w3-animate-opacity'>";
                     newRow += "<tr class=' w3-center'>";
                     newRow += "<th>" + intern.val().origin + "</th>";
                     newRow += "<th>" + intern.val().director + "</th>";
@@ -267,9 +269,8 @@ function selectType_Performer(o, k) {
 function addPerformer(i) {
     // GENERATE A UNIQUE ID BY DATE
     var fecha = new Date();
-    var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+    var UID = setUID();
     var json = "{ }";
-
     // SOLISTA
     if (i == 0) {
         var name = document.getElementById("nameMember_lonePerformer").value;
@@ -301,7 +302,7 @@ function addPerformer(i) {
         }
         var newMembers = "{" + memberList_groupPerformer.substring(0, memberList_groupPerformer.lastIndexOf(",")) + "}";
 
-        console.log(newMembers);
+        //console.log(newMembers);
         // TRANSACCION PRINCIPAL
         firebase.database().ref('performers/' + UID).set({
             type: "group",
@@ -380,6 +381,8 @@ function addMember_groupPerformer() {
 /* PRODUCTORAS._______________________________________________________________________________________________________________________________ */
 
 function initProducerPage() {
+    globalUID = "";
+    globalOption = 0;
     removeDivs('table_producers');
 
     document.getElementById("nameProducer").value = "";
@@ -390,10 +393,10 @@ function initProducerPage() {
 function refreshProducers() {
 
     // Render
-    return firebase.database().ref('/producers').once('value').then(function (snapshot) {
+    return firebase.database().ref('/producers').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
-            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('producer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr class='w3-light-gray w3-center'>";
             newRow += "<th>Localidad: " + data.val().location + "</th>";
             newRow += "<th>Rating: " + data.val().rating + "</th>";
@@ -409,7 +412,7 @@ function addProducer() {
     }
     // GENERATE A UNIQUE ID BY DATE
     var fecha = new Date();
-    var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+    var UID = setUID();
 
     // TRANSACCION PRINCIPAL
     firebase.database().ref('producers/' + UID).set({
@@ -435,6 +438,8 @@ var songStyle_List = "";
 var songStyle_counter = 0;
 
 function initSongPage() {
+    globalUID = "";
+    globalOption = 0;
     songStyleBase = "";
     authorType = 0;
     authorLyrics_counter = 0;
@@ -484,15 +489,15 @@ function addSong() {
         alert("Es requerido un interprete.");
         return null;
     }
-    // if (songSupport_counter == 0) {
-    //     alert("Nombre en blanco.");
-    //     return null;
-    // }
+    if (songSupport_counter == 0) {
+        alert("Es requerido un soporte.");
+        return null;
+    }
 
 
     // GENERATE A UNIQUE ID BY DATE
     var fecha = new Date();
-    var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+    var UID = setUID();
 
     var json0 = "{" + songPerformer_List.substring(0, songPerformer_List.lastIndexOf(",")) + "}";
     var json1 = "{" + songSupport_List.substring(0, songSupport_List.lastIndexOf(",")) + "}";
@@ -510,6 +515,7 @@ function addSong() {
     }
 
     var jsonPerformers = JSON && JSON.parse(json0) || $.parseJSON(json0);
+    var jsonSupports = JSON && JSON.parse(json1) || $.parseJSON(json1);
     firebase.database().ref('songs/' + UID).set({
         name: name,
         performers: jsonPerformers,
@@ -520,10 +526,16 @@ function addSong() {
         styles: JSON && JSON.parse(json4) || $.parseJSON(json4)
     });
 
+    
     for (i = 0; i < Object.keys(jsonPerformers).length; i++) {
         jsonSong = '{"' + UID + '": {"name":"' + name + '"}}';
         firebase.database().ref('performers/' + jsonPerformers[i].id + "/songs").update(JSON && JSON.parse(jsonSong) || $.parseJSON(jsonSong), );
-
+    }
+    
+    for (i = 0; i < Object.keys(jsonSupports).length; i++) {
+        var jsonSong1 = '{"' + UID + '": {"name":"' + name + '"}}';
+        console.log(jsonSong1);
+        firebase.database().ref('supports/' + jsonSupports[i].id + "/songs").set(JSON && JSON.parse(jsonSong1) || $.parseJSON(jsonSong1), );
     }
 
     // RESETEO DE VARIABLES Y CAMPOS
@@ -533,10 +545,10 @@ function addSong() {
 function refreshSongs() {
     removeDivs('table_songs');
 
-    return firebase.database().ref('/songs').once('value').then(function (snapshot) {
+    return firebase.database().ref('/songs').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
-            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-dark-grey w3-hover-grey'>" + data.val().name + "</h4>";
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-dark-grey w3-hover-grey'>" + data.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('song','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4>";
             // Autores Letras
             newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Autores Letras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr class='w3-light-gray w3-center'>";
@@ -554,7 +566,7 @@ function refreshSongs() {
             // Estilo Base
             newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Estilo Base</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr id='songStyleBase" + data.key + "' class='w3-light-gray w3-center'>";
-            firebase.database().ref('/styles/' + data.val().styleBase).once('value').then(function (m) {
+            firebase.database().ref('/styles/' + data.val().styleBase).orderByKey().once('value').then(function (m) {
                 console.log(m.val().nameStyle);
                 var newRow1 = "<th>" + m.val().nameStyle + "</th>";
                 addHtml("songStyleBase" + data.key, newRow1);
@@ -564,7 +576,7 @@ function refreshSongs() {
             newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Estilos Influyentes</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr id='songStyles_list" + data.key + "' class='w3-light-gray w3-center'>";
             for (i = 0; i < Object.keys(data.val().styles).length; i++) {
-                firebase.database().ref('/styles/' + data.val().styles[i].id).once('value').then(function (m) {
+                firebase.database().ref('/styles/' + data.val().styles[i].id).orderByKey().once('value').then(function (m) {
                     console.log(m.val().nameStyle);
                     var newRow1 = "<th>" + m.val().nameStyle + "</th>";
                     addHtml("songStyles_list" + data.key, newRow1);
@@ -585,31 +597,36 @@ function refreshSongs() {
             // Soporte
             newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Soportes</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr id='songSupports_list" + data.key + "' class='w3-light-gray w3-center'>";
-            for (i = 0; i < Object.keys(data.val().supports).length; i++) {
-                firebase.database().ref('/supports/' + data.val().supports[i].id).once('value').then(function (m) {
-                    console.log(m.val().name);
-                    var newRow1 = "<th>" + m.val().name + "</th>";
-                    addHtml("songSupports_list" + data.key, newRow1);
-                });
+            if (data.child("supports").val() + "" == "undefined" || data.child("supports").val() + "" == "null") {
+                var newRow1 = "<th>Desconocido</th>";
+                addHtml("songSupports_list" + data.key, newRow1);
+            } else {
+                for (i = 0; i < Object.keys(data.val().supports).length; i++) {
+                    firebase.database().ref('/supports/' + data.val().supports[i].id).orderByKey().once('value').then(function (m) {
+                        console.log(m.val().name);
+                        var newRow1 = "<th>" + m.val().name + "</th>";
+                        addHtml("songSupports_list" + data.key, newRow1);
+                    });
+                }
             }
-            newRow += "</tr></table>";
+            // newRow += "</tr></table>";
             // Partituras
-            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Partituras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
-            newRow += "<tr id='songPartituras_list' class='w3-light-gray w3-center'>";
+            // newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Partituras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            // newRow += "<tr id='songPartituras_list' class='w3-light-gray w3-center'>";
             // for (i = 0; i < Object.keys(data.val().performers).length; i++) {
-            //     firebase.database().ref('/performers/' + data.val().performers[i].id).once('value').then(function (m) {
+            //     firebase.database().ref('/performers/' + data.val().performers[i].id).orderByKey().once('value').then(function (m) {
             //         console.log(m.val().name);
             //         var newRow1 = "<th>" + m.val().name + "</th>";
 
             //         document.getElementById("songPerformers_list").insertAdjacentHTML('beforeEnd', newRow1);
             //     });
             // }
-            newRow += "</tr></table>";
+            // newRow += "</tr></table>";
             // Letras
-            newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Letras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
-            newRow += "<tr id='songLetras_list' class='w3-light-gray w3-center'>";
+            // newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Letras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            // newRow += "<tr id='songLetras_list' class='w3-light-gray w3-center'>";
             // for (i = 0; i < Object.keys(data.val().performers).length; i++) {
-            //     firebase.database().ref('/performers/' + data.val().performers[i].id).once('value').then(function (m) {
+            //     firebase.database().ref('/performers/' + data.val().performers[i].id).orderByKey().once('value').then(function (m) {
             //         console.log(m.val().name);
             //         var newRow1 = "<th>" + m.val().name + "</th>";
 
@@ -653,7 +670,7 @@ function refreshSongStyles() {
     removeDivs('styleExtra_available');
     removeDivs('styleBase');
 
-    return firebase.database().ref('/styles').once('value').then(function (snapshot) {
+    return firebase.database().ref('/styles').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         var flag = false;
         snapshot.forEach(function (data) {
@@ -687,7 +704,7 @@ function refreshSongPerformers() {
     removeDivs('songPerformers_available');
 
 
-    return firebase.database().ref('/performers').once('value').then(function (snapshot) {
+    return firebase.database().ref('/performers').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
             var type = "";
@@ -718,7 +735,7 @@ function add_SelectedSongPerformer(o) {
 
 function refreshSongSupports() {
     removeDivs('songSupports_available');
-    return firebase.database().ref('/supports').once('value').then(function (snapshot) {
+    return firebase.database().ref('/supports').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
             // REAL_CAPTURE
@@ -748,6 +765,8 @@ var influences_counter = 0;
 var influencesTo_counter = 0;
 
 function initStylePage() {
+    globalUID = "";
+    globalOption = 0;
     influences_List = "";
     influencesTo_List = "";
     influences_counter = 0;
@@ -771,11 +790,11 @@ function initStylePage() {
 function refreshStyles() {
     console.log('refresca Estilos');
     // Render
-    return firebase.database().ref('/styles').once('value').then(function (snapshot) {
+    return firebase.database().ref('/styles').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
             if (data.key != "0") {
-                var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().nameStyle + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+                var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().nameStyle + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('style','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
                 newRow += "<tr class='w3-light-gray w3-center'>";
                 newRow += "<th>" + data.val().father + "</th>";
                 newRow += "<th>" + data.val().origin + "</th>";
@@ -795,7 +814,7 @@ function addStyles() {
     }
     // GENERATE A UNIQUE ID BY DATE
     var fecha = new Date();
-    var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+    var UID = setUID();
 
     var json2 = "{" + influences_List.substring(0, influences_List.lastIndexOf(",")) + "}";
     var json1 = "{" + influencesTo_List.substring(0, influencesTo_List.lastIndexOf(",")) + "}";
@@ -846,6 +865,8 @@ var recordSupport = "";
 var producersSupport = "";
 
 function initSupportPage() {
+    globalUID = "";
+    globalOption = 0;
     producersSupport = "";
     refreshSupports();
     refreshProducers_Support();
@@ -858,15 +879,15 @@ function initSupportPage() {
 function refreshSupports() {
     removeDivs('table_supports');
     // Render
-    return firebase.database().ref('/supports').once('value').then(function (snapshot) {
+    return firebase.database().ref('/supports').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
-            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('support','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr id='supportsData" + data.key + "' class='w3-light-gray w3-center'>";
             newRow += "<th>Ubicación: " + data.val().location + "</th>";
             newRow += "<th>Grabación: " + data.val().record + "</th>";
             if (data.val().record == "Comercial") {
-                firebase.database().ref('/producers/' + data.val().producer).once('value').then(function (m) {
+                firebase.database().ref('/producers/' + data.val().producer).orderByKey().once('value').then(function (m) {
                     var newRow1 = "<th>Productora: " + m.val().name + "</th>";
                     addHtml("supportsData" + data.key, newRow1);
                 });
@@ -879,7 +900,7 @@ function refreshSupports() {
 
 function refreshProducers_Support() {
     removeDivs('producers_Available');
-    return firebase.database().ref('/producers').once('value').then(function (snapshot) {
+    return firebase.database().ref('/producers').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
             // REAL_CAPTURE
@@ -918,7 +939,7 @@ function addSupport() {
     }
     // GENERATE A UNIQUE ID BY DATE
     var fecha = new Date();
-    var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+    var UID = setUID();
     json = "{ }";
 
     // TRANSACCION PRINCIPAL
@@ -953,6 +974,8 @@ var typeTextjs = "";
 var elementTextjs = "";
 var typeLyricjs = "";
 function initTextPage() {
+    globalUID = "";
+    globalOption = 0;
     songLyric_List = "";
     songLyric_counter = 0;
     songText_List = "";
@@ -970,11 +993,13 @@ function initTextPage() {
 }
 
 function refreshTexts() {
+
+    removeDivs('tabla_texts');
     // Render
-    return firebase.database().ref('/texts').once('value').then(function (snapshot) {
+    return firebase.database().ref('/texts').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
-            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().element + "</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().element + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('text','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr id='textData" + data.key + "' class='w3-light-gray w3-center w3-centered '>";
             newRow += "<th>Tipo: " + data.val().type + "</th>";
             if (data.val().element == "Partitura") {
@@ -983,7 +1008,7 @@ function refreshTexts() {
                     newRow += "<th>Precio: " + data.val().price + "</th>";
                 }
             } else {
-                firebase.database().ref('/songs/' + data.val().originalSong).once('value').then(function (m) {
+                firebase.database().ref('/songs/' + data.val().originalSong).orderByKey().once('value').then(function (m) {
                     var newRow1 = "<th>Canción Original: " + m.val().name + "</th>";
                     addHtml("textData" + data.key, newRow1);
                 });
@@ -992,7 +1017,7 @@ function refreshTexts() {
             addHtml('tabla_texts', newRow);
             try {
                 for (i = 0; i < Object.keys(data.val().songs).length; i++) {
-                    firebase.database().ref('/songs/' + data.val().songs[i].id).once('value').then(function (m) {
+                    firebase.database().ref('/songs/' + data.val().songs[i].id).orderByKey().once('value').then(function (m) {
                         var newRow1 = "<th>" + m.val().name + "</th>";
                         document.getElementById('songsRow' + data.key).insertAdjacentHTML('afterEnd', newRow1);
                     });
@@ -1008,7 +1033,7 @@ function refreshTexts() {
 function refreshSongTexts() {
     removeDivs('songTexts_available');
     removeDivs('OriginalSong_Available');
-    return firebase.database().ref('/songs').once('value').then(function (snapshot) {
+    return firebase.database().ref('/songs').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
             // REAL_CAPTURE
@@ -1020,7 +1045,6 @@ function refreshSongTexts() {
         });
         // END FOR_EACH
     });
-
 }
 
 function add_SelectedSong_Text(o) {
@@ -1060,7 +1084,7 @@ function addMusicSheet() {
             }
             // GENERATE A UNIQUE ID BY DATE
             var fecha = new Date();
-            var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+            var UID = setUID();
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
 
@@ -1077,7 +1101,7 @@ function addMusicSheet() {
         } else if (typeTextjs == "Comercial") {
             // GENERATE A UNIQUE ID BY DATE
             var fecha = new Date();
-            var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+            var UID = setUID();
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
 
@@ -1103,7 +1127,7 @@ function addMusicSheet() {
 
             // GENERATE A UNIQUE ID BY DATE
             var fecha = new Date();
-            var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+            var UID = setUID();
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
             alert(json1);
@@ -1119,7 +1143,7 @@ function addMusicSheet() {
         } else if (typeLyricjs == "Obtenida") {
             // GENERATE A UNIQUE ID BY DATE
             var fecha = new Date();
-            var UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+            var UID = setUID();
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
 
@@ -1146,9 +1170,80 @@ function addText_SongList(json, UID) {
     var jsonFinal = "";
 
     for (i = 0; i < Object.keys(jsonTexts).length; i++) {
-        jsonFinal += '"' + i + '": {"id":"' + UID + '"}';
-    
-    jsonFinal = "{" + jsonFinal + "}";
+        // GENERATE A UNIQUE ID BY DATE
+        var fecha = new Date();
+        UID = setUID();
+        jsonFinal += '"' + UID + '": {"id":"' + UID + '"}';
 
-    firebase.database().ref('songs/' + jsonTexts[i].id + "/texts").update(JSON && JSON.parse(jsonFinal) || $.parseJSON(jsonFinal), );}
+        jsonFinal = "{" + jsonFinal + "}";
+
+        firebase.database().ref('songs/' + jsonTexts[i].id + "/texts").update(JSON && JSON.parse(jsonFinal) || $.parseJSON(jsonFinal), );
+    }
 }
+
+function setUID() {
+    if (globalOption == 0) {
+        // GENERATE A UNIQUE ID BY DATE
+        var fecha = new Date();
+        UID = "Y" + fecha.getFullYear() + "M" + (fecha.getMonth() + 1) + "D" + fecha.getDate() + "H" + fecha.getHours() + "Mi" + fecha.getMinutes() + "S" + fecha.getSeconds() + "m" + fecha.getMilliseconds() + "";
+        return UID;
+    } else {
+        return globalUID;
+    }
+}
+
+var globalUID = "";
+var globalOption = 0;
+
+function removeDB(kind, id, div) {
+    globalUID = id;
+    // globalOption = 1;
+
+    div.parentNode.parentNode.parentNode.removeChild(div.parentNode.parentNode);
+                    firebase.database().ref(kind + 's/' + id).set({});
+
+    // if (kind == "song") {
+    //     firebase.database().ref('/songs/' + id).orderByKey().once('value').then(function (data) {
+    //         for (i = 0; i < Object.keys(data.val().performers).length; i++) {
+    //             firebase.database().ref('/songs/' + id + "/performers/" + i).orderByKey().once('value').then(function (perid) {
+    //                 perid.forEach(function (snap) {
+    //                     firebase.database().ref('/performers/' + snap.val() + "/songs/" + id).set({});
+    //                     firebase.database().ref(kind + 's/' + id).set({});
+    //                 });
+    //             });
+    //         }
+    //     });
+    // } else if (kind == "performer") {
+    //     firebase.database().ref('/performers/' + id + "/songs").orderByKey().once('value').then(function (data) {
+    //         data.forEach(function (data_each) {
+    //             firebase.database().ref('/performers/' + id + "/songs/" + data_each.key).orderByKey().once('value').then(function (perid) {
+    //                 firebase.database().ref('/songs/' + perid.key + "/performers/" + id).set({});
+    //                 console.log(firebase.database().ref('/songs/' + perid.key + "/performers/" + id));
+    //                 firebase.database().ref(kind + 's/' + id).set({});
+    //                 //Object.keys(data.child("performers")).length
+    //             });
+    //         });
+    //     });
+    // }
+
+
+
+    //initPerformerPage();
+    // if (kind == "performer") {
+    //     firebase.database().ref('performers/' + UID).set({});
+    //     initPerformerPage();
+    // } else if (kind == "style") {
+
+    //     addStyles();
+    // } else if (kind == "text") {
+    //     addText();
+
+    // } else if (kind == "support") {
+    //     addSupport();
+    // } else {
+    //     addProducer();
+    // }
+    globalOption = 0;
+}
+
+
