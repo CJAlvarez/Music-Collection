@@ -105,7 +105,7 @@ function addCollection() {
     json = "{" + recordList.substring(0, recordList.lastIndexOf(",")) + "}";
     alert(json);
 
-    // TRANSACCION PRINCIPAL
+    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
     var title = document.getElementById("title-collection").value;
     firebase.database().ref('collections/' + UID).set({
         title: title,
@@ -127,7 +127,7 @@ var role = -1;
 
 function initPerformerPage() {
     globalUID = "";
-    globalOption = 0;
+    toModify(1, this);;
     document.getElementById('performerType').children[0].removeAttribute("class");
     document.getElementById('performerType').children[0].setAttribute("class", "w3-hover-blue cursor-pointer w3-blue");
     document.getElementById('performerType').children[1].removeAttribute("class");
@@ -175,7 +175,7 @@ function refresh_tablePerformers() {
                 newRow = "";
                 // SINGLE 
                 if (intern.val().type == "single") {
-                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('performer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered   w3-animate-opacity'>";
+                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "<span id='span_M' onclick=\"toModify(0,'" + data.key + "');\"class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('performer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered   w3-animate-opacity'>";
                     newRow += "<tr class=' w3-center'>";
                     if (intern.val().vocalist == true) {
                         newRow += "<th>Vocalista</th>";
@@ -185,7 +185,7 @@ function refresh_tablePerformers() {
                     else if (intern.val().instrument == 2) { newRow += "<th>Baterista</th>"; }
                     else if (intern.val().instrument == 3) { newRow += "<th>Bajista</th>"; }
                     try {
-                        newRow += "<th>Canciones</th>";
+                        //newRow += "<th>Canciones</th>";
                     } catch (error) {
 
                     }
@@ -196,7 +196,7 @@ function refresh_tablePerformers() {
                 } else if (intern.val().type == "group") {
 
                     firebase.database().ref('/performers/' + data.key + "/members").orderByKey().once('value').then(function (mems) {
-                        newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('performer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table id='in_group_tablePerformer" + data.key + "' class='w3-table w3-centered w3-animate-opacity'>";
+                        newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "<span id='span_M' onclick=\"toModify(0,'" + data.key + "');\"class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('performer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table id='in_group_tablePerformer" + data.key + "' class='w3-table w3-centered w3-animate-opacity'>";
                         addHtml('group_tablePerformer', newRow);
                         mems.forEach(function (m) {
                             newRow = "<tr class=' w3-center'>";
@@ -212,7 +212,7 @@ function refresh_tablePerformers() {
 
                     // ORCHESTRA
                 } else if (intern.val().type == "orchestra") {
-                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('Performer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered w3-animate-opacity'>";
+                    newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + intern.val().name + "<span id='span_M' onclick=\"toModify(0,'" + data.key + "');\"class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('Performer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered w3-animate-opacity'>";
                     newRow += "<tr class=' w3-center'>";
                     newRow += "<th>" + intern.val().origin + "</th>";
                     newRow += "<th>" + intern.val().director + "</th>";
@@ -278,7 +278,7 @@ function addPerformer(i) {
             alert("Nombre en blanco.");
             return null;
         }
-        // TRANSACCION PRINCIPAL
+        /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
         firebase.database().ref('performers/' + UID).set({
             name: name,
             type: "single",
@@ -303,7 +303,7 @@ function addPerformer(i) {
         var newMembers = "{" + memberList_groupPerformer.substring(0, memberList_groupPerformer.lastIndexOf(",")) + "}";
 
         //console.log(newMembers);
-        // TRANSACCION PRINCIPAL
+        /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
         firebase.database().ref('performers/' + UID).set({
             type: "group",
             name: name,
@@ -330,7 +330,7 @@ function addPerformer(i) {
             return null;
         }
 
-        // TRANSACCION PRINCIPAL
+        /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
         firebase.database().ref('performers/' + UID).set({
             type: "orchestra",
             name: name,
@@ -382,7 +382,7 @@ function addMember_groupPerformer() {
 
 function initProducerPage() {
     globalUID = "";
-    globalOption = 0;
+    toModify(1, this);;
     removeDivs('table_producers');
 
     document.getElementById("nameProducer").value = "";
@@ -396,7 +396,7 @@ function refreshProducers() {
     return firebase.database().ref('/producers').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
-            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('producer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "<span id='span_M' onclick=\"toModify(0,'" + data.key + "');\"class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('producer','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr class='w3-light-gray w3-center'>";
             newRow += "<th>Localidad: " + data.val().location + "</th>";
             newRow += "<th>Rating: " + data.val().rating + "</th>";
@@ -414,7 +414,7 @@ function addProducer() {
     var fecha = new Date();
     var UID = setUID();
 
-    // TRANSACCION PRINCIPAL
+    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
     firebase.database().ref('producers/' + UID).set({
         name: document.getElementById("nameProducer").value,
         location: document.getElementById("locationProducer").value,
@@ -439,7 +439,7 @@ var songStyle_counter = 0;
 
 function initSongPage() {
     globalUID = "";
-    globalOption = 0;
+    toModify(1, this);;
     songStyleBase = "";
     authorType = 0;
     authorLyrics_counter = 0;
@@ -505,7 +505,7 @@ function addSong() {
     var json3 = "{" + authorMusic_List.substring(0, authorMusic_List.lastIndexOf(",")) + "}";
     var json4 = "{" + songStyle_List.substring(0, songStyle_List.lastIndexOf(",")) + "}";
 
-    // TRANSACCION PRINCIPAL
+    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
     var name = document.getElementById("nameSong").value;
     for (i = 0; i < document.getElementById("styleBase").childElementCount; i++) {
         if (document.getElementById("styleBase").children[i].value == document.getElementById("styleBase").value) {
@@ -526,12 +526,12 @@ function addSong() {
         styles: JSON && JSON.parse(json4) || $.parseJSON(json4)
     });
 
-    
+
     for (i = 0; i < Object.keys(jsonPerformers).length; i++) {
         jsonSong = '{"' + UID + '": {"name":"' + name + '"}}';
         firebase.database().ref('performers/' + jsonPerformers[i].id + "/songs").update(JSON && JSON.parse(jsonSong) || $.parseJSON(jsonSong), );
     }
-    
+
     for (i = 0; i < Object.keys(jsonSupports).length; i++) {
         var jsonSong1 = '{"' + UID + '": {"name":"' + name + '"}}';
         console.log(jsonSong1);
@@ -548,7 +548,7 @@ function refreshSongs() {
     return firebase.database().ref('/songs').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
-            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-dark-grey w3-hover-grey'>" + data.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('song','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4>";
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-dark-grey w3-hover-grey'>" + data.val().name + "<span id='span_M' onclick=\"toModify(0,'" + data.key + "');\"class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('song','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4>";
             // Autores Letras
             newRow += "<h4 class='w3-wide w3-hover-dark-grey'>Autores Letras</h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr class='w3-light-gray w3-center'>";
@@ -766,7 +766,7 @@ var influencesTo_counter = 0;
 
 function initStylePage() {
     globalUID = "";
-    globalOption = 0;
+    toModify(1, this);;
     influences_List = "";
     influencesTo_List = "";
     influences_counter = 0;
@@ -794,7 +794,7 @@ function refreshStyles() {
         // FOR_EACH
         snapshot.forEach(function (data) {
             if (data.key != "0") {
-                var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().nameStyle + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('style','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+                var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().nameStyle + "<span id='span_M' onclick=\"toModify(0,'" + data.key + "');\"class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('style','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
                 newRow += "<tr class='w3-light-gray w3-center'>";
                 newRow += "<th>" + data.val().father + "</th>";
                 newRow += "<th>" + data.val().origin + "</th>";
@@ -819,7 +819,7 @@ function addStyles() {
     var json2 = "{" + influences_List.substring(0, influences_List.lastIndexOf(",")) + "}";
     var json1 = "{" + influencesTo_List.substring(0, influencesTo_List.lastIndexOf(",")) + "}";
 
-    // TRANSACCION PRINCIPAL
+    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
     firebase.database().ref('styles/' + UID).set({
         nameStyle: document.getElementById("nameStyle").value,
         origin: document.getElementById("originStyle").value,
@@ -866,7 +866,7 @@ var producersSupport = "";
 
 function initSupportPage() {
     globalUID = "";
-    globalOption = 0;
+    toModify(1, this);;
     producersSupport = "";
     refreshSupports();
     refreshProducers_Support();
@@ -882,7 +882,7 @@ function refreshSupports() {
     return firebase.database().ref('/supports').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
-            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('support','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().name + "<span id='span_M' onclick=\"toModify(0,'" + data.key + "');\"class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('support','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr id='supportsData" + data.key + "' class='w3-light-gray w3-center'>";
             newRow += "<th>Ubicación: " + data.val().location + "</th>";
             newRow += "<th>Grabación: " + data.val().record + "</th>";
@@ -942,7 +942,7 @@ function addSupport() {
     var UID = setUID();
     json = "{ }";
 
-    // TRANSACCION PRINCIPAL
+    /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
     var name = document.getElementById("nameSupport").value;
     if (recordSupport == "Propia") {
         firebase.database().ref('supports/' + UID).set({
@@ -975,7 +975,7 @@ var elementTextjs = "";
 var typeLyricjs = "";
 function initTextPage() {
     globalUID = "";
-    globalOption = 0;
+    toModify(1, this);;
     songLyric_List = "";
     songLyric_counter = 0;
     songText_List = "";
@@ -999,7 +999,7 @@ function refreshTexts() {
     return firebase.database().ref('/texts').orderByKey().once('value').then(function (snapshot) {
         // FOR_EACH
         snapshot.forEach(function (data) {
-            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().element + "<span id='span_M' onclick=\"globalOption = 2;\" class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('text','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
+            var newRow = "<div class='w3-section w3-card'><h4 class='w3-wide w3-hover-dark-grey'>" + data.val().element + "<span id='span_M' onclick=\"toModify(0,'" + data.key + "');\"class=\"w3-button w3-hover-teal w3-transparent\">&aelig;</span><span id='span_X' onclick=\"removeDB('text','" + data.key + "', this)\" class=\"w3-button w3-hover-red w3-transparent\">&times;</span></h4><table class='w3-table w3-centered  w3-animate-opacity'>";
             newRow += "<tr id='textData" + data.key + "' class='w3-light-gray w3-center w3-centered '>";
             newRow += "<th>Tipo: " + data.val().type + "</th>";
             if (data.val().element == "Partitura") {
@@ -1088,7 +1088,7 @@ function addMusicSheet() {
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
 
-            // TRANSACCION PRINCIPAL
+            /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
             firebase.database().ref('texts/' + UID).set({
                 element: elementTextjs,
                 type: typeTextjs,
@@ -1105,7 +1105,7 @@ function addMusicSheet() {
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
 
-            // TRANSACCION PRINCIPAL
+            /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
             firebase.database().ref('texts/' + UID).set({
                 element: elementTextjs,
                 type: typeTextjs,
@@ -1131,7 +1131,7 @@ function addMusicSheet() {
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
             alert(json1);
-            // TRANSACCION PRINCIPAL
+            /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
             firebase.database().ref('texts/' + UID).set({
                 element: elementTextjs,
                 type: typeLyricjs,
@@ -1147,7 +1147,7 @@ function addMusicSheet() {
 
             var json1 = "{" + songText_List.substring(0, songText_List.lastIndexOf(",")) + "}";
 
-            // TRANSACCION PRINCIPAL
+            /* TRANSACCION PRINCIPAL*/  if(globalOption == 0){     document.getElementById('modal_Add').style.display = 'block';     }
             firebase.database().ref('texts/' + UID).set({
                 element: elementTextjs,
                 originalSong: songLyric_List,
@@ -1194,13 +1194,15 @@ function setUID() {
 
 var globalUID = "";
 var globalOption = 0;
+var flagModify = false;
 
 function removeDB(kind, id, div) {
     globalUID = id;
     // globalOption = 1;
 
     div.parentNode.parentNode.parentNode.removeChild(div.parentNode.parentNode);
-                    firebase.database().ref(kind + 's/' + id).set({});
+    firebase.database().ref(kind + 's/' + id).set({});
+    document.getElementById('modal_Remove').style.display = 'block';
 
     // if (kind == "song") {
     //     firebase.database().ref('/songs/' + id).orderByKey().once('value').then(function (data) {
@@ -1247,3 +1249,33 @@ function removeDB(kind, id, div) {
 }
 
 
+function toModify(op, id) {
+    globalUID = id;
+    if (op == 0) {
+        if (flagModify == true) {
+            globalOption = 0;
+            for (i = 0; i < document.getElementsByClassName('add_title').length; i++) {
+                document.getElementsByClassName('add_title')[i].textContent = "Agregar";
+            }
+            flagModify = false;
+            return null;
+        }
+        globalOption = 2;
+        //alert(document.getElementsByClassName('add_title').length);
+        for (i = 0; i < document.getElementsByClassName('add_title').length; i++) {
+            document.getElementsByClassName('add_title')[i].textContent = "Modificar";
+        }
+        flagModify = true;
+        document.getElementById('modal_Modify').style.display = 'block';
+    } else {
+        globalOption = 0;
+        for (i = 0; i < document.getElementsByClassName('add_title').length; i++) {
+            document.getElementsByClassName('add_title')[i].textContent = "Agregar";
+        }
+        flagModify = false;
+    }
+}
+
+if(globalOption != 0){
+    document.getElementById('modal_Add').style.display = 'block';    
+}

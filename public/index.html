@@ -67,13 +67,60 @@
     </div>
   </div>
 
+<!-- MODALS. -->
+<div style="display:none;" id="modal_Modify" class="w3-modal w3-animate-opacity">
+  <div class="w3-modal-content w3-card-4">
+    <header class="w3-container w3-teal">
+      <span onclick="document.getElementById('modal_Modify').style.display='none'" class="w3-button w3-large w3-display-topright">&times;</span>
+      <h2>¡Estás modificando!</h2>
+    </header>
+    <div class="w3-container">
+      <h3>Completa el formulario de la manera que agregas.</h3>
+    </div>
+    <footer class="w3-container w3-black">
+      <p>Pulsa el mismo botón o recarga, para regresar a agregar.</p>
+    </footer>
+  </div>
+</div>
 
+<div style="display:none;" id="modal_Remove" class="w3-modal w3-animate-opacity">
+  <div class="w3-modal-content w3-card-4">
+    <header class="w3-container w3-red">
+      <span onclick="document.getElementById('modal_Remove').style.display='none'" class="w3-button w3-large w3-display-topright">&times;</span>
+      <h2>¡Estás eliminando!</h2>
+    </header>
+    <div class="w3-container">
+      <h3>Has eliminado este dato.</h3>
+      <h4>Verás los cambios reflejados en las listas correspondientes.</h4>
+    </div>
+    <footer class="w3-container w3-black">
+      <p>Esta acción es permanente e irreversible.</p>
+    </footer>
+  </div>
+</div>
+
+<div style="display:none;" id="modal_Add" class="w3-modal w3-animate-opacity">
+  <div class="w3-modal-content w3-card-4">
+    <header class="w3-container w3-green">
+      <span onclick="document.getElementById('modal_Add').style.display='none'" class="w3-button w3-large w3-display-topright">&times;</span>
+      <h2>¡Estás Agregando!</h2>
+    </header>
+    <div class="w3-container">
+      <h3>Has agregado este dato exitosamente.</h3>
+    </div>
+    <footer class="w3-container w3-black">
+      <p>Para modificar ve a la lista y presiona el botón <span class="w3-button w3-hover-teal w3-transparent">&aelig;</span></p>
+      <p>Para eliminar ve a la lista y presiona el botón <span class="w3-button w3-hover-red w3-transparent">&times;</span></p>
+    </footer>
+  </div>
+</div>
 
   <!-- Page content -->
   <div id+ "page" class="w3-content " style=" caret-color: auto; max-width:2000px;margin-top:46px">
 
     <!-- HOME._________________________________________________________________________________________________________-->
-    <div class="w3-display-container  w3-animate-opacity w3-text-white" style="margin-top: 10pc; display:block; font-family: 'Lobster', serif;" id="home">
+    <div class="w3-display-container  w3-animate-opacity w3-text-white" style="margin-top: 10pc; display:block; font-family: 'Lobster', serif;"
+      id="home">
       <div class="w3-jumbo w3-animate-center w3-padding w3-display-middle" style="font-family: 'Lobster', serif;">
         <p class="w3-jumbo w3-animate-center wellcome" style="font-family: 'Lobster', serif;">Waves</p>
         <p class="w3-jumbo w3-animate-center wellcome" style="font-family: 'Lobster', serif;">Collection</p>
@@ -161,7 +208,7 @@
       <!-- AGREGAR -->
       <div id="tag-add-performer" class="w3-card w3-padding-0 color-whitesmoke">
         <div class="w3-center w3-padding-64">
-          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+          <span class="add_title w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
         </div>
 
         <!-- MENU: TIPO DE INTERPRETE-->
@@ -336,7 +383,7 @@
       <!-- AGREGAR -->
       <div class="w3-card w3-padding-0 color-whitesmoke">
         <div class="w3-center w3-padding-64">
-          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+          <span class="add_title w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
         </div>
 
         <!-- ADD PRODUCER. -->
@@ -390,7 +437,7 @@
       <!-- AGREGAR -->
       <div class="w3-card w3-padding-0 color-whitesmoke">
         <div class="w3-center w3-padding-64">
-          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+          <span class="add_title w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
         </div>
 
         <!-- Nombre. -->
@@ -504,7 +551,7 @@
       <!-- AGREGAR -->
       <div class="w3-card w3-padding-0 color-whitesmoke">
         <div class="w3-center w3-padding-64">
-          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+          <span class="add_title w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
         </div>
 
         <!-- ADD STYLE -->
@@ -583,7 +630,7 @@
       <!-- AGREGAR -->
       <div class="w3-card w3-padding-0 color-whitesmoke">
         <div class="w3-center w3-padding-64">
-          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+          <span class="add_title w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
         </div>
 
         <!-- Nombre. -->
@@ -661,7 +708,7 @@
       <!-- TITLE. -->
       <h2 class="w3-wide">Textos</h2>
       <p class="w3-opacity">
-        <i>... Llenando el cielo de estrellas.</i>
+        <i>... Letras, palabras... ¿Frases hechas con polvo de hada?</i>
       </p>
       <!-- END TITLE. -->
 
@@ -686,7 +733,7 @@
       <div class="w3-card w3-padding-0 color-whitesmoke">
 
         <div class="w3-center w3-padding-64">
-          <span class="w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
+          <span class="add_title w3-xxlarge w3-bottombar w3-border-dark-grey w3-padding-16">Agregar</span>
         </div>
 
         <div class="w3-section ">
@@ -788,6 +835,8 @@
       <footer class="w3-container w3-center">
         <p>Copyright (C) 2018 X-Men Arts. </p>
       </footer>
+
+      
 
       <script src="main.js"></script>
 </body>
